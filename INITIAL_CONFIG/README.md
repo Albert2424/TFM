@@ -21,8 +21,8 @@ The code has been created using _Python 3.10.9_. Other important packages needed
 [2.4.2]: https://www.mdanalysis.org/pages/installation_quick_start/
 [1.9.7]: https://www.mdtraj.org/1.9.7/installation.html
 
-All packages may be installed using [Miniconda] using the `pip` command of the conda prompt.
-`
+All packages may be installed using [Miniconda] with the `pip` command of the conda prompt.
+
 [Miniconda]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 
 
