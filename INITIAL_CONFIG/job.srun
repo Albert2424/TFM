@@ -1,0 +1,44 @@
+#!/bin/bash
+#SBATCH -J initial_conf_test
+#SBATCH -e initial_conf_test.err
+#SBATCH -o initial_conf_test.out
+#SBATCH --gres=gpu:1
+#SBATCH -N 1
+##SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=32
+#SBATCH --time=0-02:00
+#SBATCH --mem=48G
+
+name='WT' #protein name (WT or Shuffle)
+temp=300 #Temperature
+cutoff=4.0 #Cutoff distance
+wind=6 #number of windows desired for WESTPA
+n=100 #number of chains 
+L=300 #cubic box size
+steps=4000000
+
+if [ ! -d $name ]; then
+    mkdir $name  
+fi
+
+if [ ! -d $name/$temp ]; then
+    mkdir $name/$temp
+fi
+
+if [ ! -d 'config' ]; then
+    mkdir 'config'
+else
+    rm -r 'config'
+    mkdir 'config'
+fi
+
+module load cesga/2020
+module load gcc/system openmpi/4.0.5_ft3
+module load openmm
+module load mdanalysis
+
+date
+python init_conf.py --windows $wind --n_chains $n --L $L --seq $name
+python simulate_ini.py --seq $name --temp $temp --cutoff $cutoff --windows $wind --n_chains $n --steps $steps
+rm -r $name
+date
