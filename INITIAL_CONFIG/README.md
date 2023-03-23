@@ -48,7 +48,7 @@ Since the code must generate the initial configurations and then take them to eq
 
 The program will return a directory named `/config` containing the initial configurations before and after equilibrium (i.e. `top_0.50.pdb`, `top_eq\_0.50.pdb` for a system with 50\% of the chains forming the cluster). As previously mentioned, the code also generates a `.dcd` with a 100 frames from the initial position to equilibrium (following the previous example, `traj_0.50.dcd`). Use the trajectory file to set the number of steps needed by your system to reach equilibrium.
 
-*NOTE:* _in order to visualize if the chains have reached equilibrium we used [VMD] viewer using the beta mode from graphics representation. Since we wanted a different color for each aminoacid from top to bottom, the b-factor of every particle of the chain was changed in order to do it. This directory also includes the file `b_fact.py` which changes the b factors of any pdb file that you may have generated from other codes._
+*NOTE:* _in order to visualize if the chains have reached equilibrium we used [VMD] viewer using the beta mode from graphics representation. Since we wanted a different color for each aminoacid from top to bottom, the b-factor of every particle of the chain was changed in order to do it. This directory also includes the file `b_fact.py` which changes the b factors of any `.pdb file that you may have generated from other codes._
 
 [VMD]: https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
 
