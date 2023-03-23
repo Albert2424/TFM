@@ -14,5 +14,5 @@ For all codes used in this work, if a protein different than _WT_ and _shuffle_ 
 
 ### CONTENTS
 
-1. `/INITIAL_CONF`: Directory containning all the necessary files to generate the initial configurations of the system to use in the WESTPA enviorement.
+1. `/INITIAL_CONFIG`: Directory containning all the necessary files to generate the initial configurations of the system to use in the WESTPA enviorement.
 
