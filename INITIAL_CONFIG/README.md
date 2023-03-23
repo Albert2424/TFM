@@ -21,6 +21,24 @@ The code has been created using _Python 3.10.9_. Other important packages needed
 [2.4.2]: https://www.mdanalysis.org/pages/installation_quick_start/
 [1.9.7]: https://www.mdtraj.org/1.9.7/installation.html
 
-All packages may be installed using [Miniconda] using the '''pip''' command of the conda prompt.
-
+All packages may be installed using [Miniconda] using the `pip` command of the conda prompt.
+`
 [Miniconda]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+
+###EXECUTION
+
+To execute the program in your machine use the _run\_ini.sh_ file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to _job.srun_. This are the default settings for the both files:
+
+```bash
+name='WT' #protein name (WT or Shuffle)
+temp=300 #Temperature
+cutoff=4.0 #Cutoff distance
+wind=6 #number of windows desired for WESTPA
+n=100 #number of chains 
+L=300 #cubic box size
+steps=4000000 #number of steps of the simulation to reach equilibrium
+
+```
+
+
+
