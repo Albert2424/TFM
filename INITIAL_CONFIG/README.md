@@ -25,7 +25,8 @@ All packages may be installed using [Miniconda] using the `pip` command of the c
 `
 [Miniconda]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 
-###EXECUTION
+
+### EXECUTION
 
 To execute the program in your machine use the _run\_ini.sh_ file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to _job.srun_. This are the default settings for the both files:
 
@@ -39,6 +40,17 @@ L=300 #cubic box size
 steps=4000000 #number of steps of the simulation to reach equilibrium
 
 ```
+
+Since the code must generate the initial configurations and then take them to equilibrium, this may take a while. The code also generates a `.dcd` file so you can adapt the number of steps to reach equilibrium. The code generates as many initial configurations as windows (`wind`) demanded, each configuration with a certain number of chains already in a cluster.
+
+
+### RESULTS
+
+The program will return a directory named `config` containing the initial configurations before and after equilibrium (i.e. _top\_0.50.pdb_, _top\_eq\_0.50.pdb_ for a system with 50\% of the chains forming the cluster). As previously mentioned, the code also generates a `.dcd` with a 100 frames from the initial position to equilibrium (following the previous example, _traj\_0.50.dcd_). Use the trajectory file to set the number of steps needed by your system to reach equilibrium.
+
+*NOTE:* _in order to visualize if the chains have reached equilibrium we used [VMD] viewer using the beta mode from graphics representation. Since we wanted a different color for each aminoacid from top to bottom, the b-factor of every particle of the chain was changed in order to do it._
+
+[VMD]: https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
 
 
 
