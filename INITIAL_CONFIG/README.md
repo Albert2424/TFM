@@ -31,7 +31,7 @@ All packages may be installed using [Miniconda] using the `pip` command of the c
 To execute the program in your machine use the _run\_ini.sh_ file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to _job.srun_. This are the default settings for the both files:
 
 ```bash
-name='WT' #protein name (WT or Shuffle)
+seq='WT' #protein name (WT or Shuffle)
 temp=300 #Temperature
 cutoff=4.0 #Cutoff distance
 wind=6 #number of windows desired for WESTPA
