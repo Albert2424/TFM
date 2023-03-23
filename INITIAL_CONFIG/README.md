@@ -2,7 +2,7 @@
 
 In order to start the dynamics from different starting conditions, some specific initial distributions are generated. The aim of generating distributions with different aggregate sizes is to optimize the WESTPA simulation of the dynamics of aggregation. 
 
-To generate the initial configurations we need three codes: _init\_config.py_, which provides a first spatial distribution with stiff peptide distribution and _simulate\_ini.py_ and _analyse\_ini.py_ which are meant to bring the configuration to equilibrium while maintaining the chains that are far away from the cluster fixed. Both _simulate\_ini.py_ and _analyse\_ini.py_ are adaptations of codes made by Giulio Tesei and Kresten Lindorff-Larsen on their paper _Improved Predictions of Phase Behaviour of IDPs by Tuning the Interaction Range_. See the code in **[here]**.
+To generate the initial configurations we need three codes: `init_config.py`, which provides a first spatial distribution with stiff peptide distribution and `simulate_ini.py` and `analyse_ini.py` which are meant to bring the configuration to equilibrium while maintaining the chains that are far away from the cluster fixed. Both `simulate_ini.py` and `analyse_ini.py` are adaptations of codes made by Giulio Tesei and Kresten Lindorff-Larsen on their paper _Improved Predictions of Phase Behaviour of IDPs by Tuning the Interaction Range_. See the original code in **[here]**.
 
 
 
@@ -28,7 +28,7 @@ All packages may be installed using [Miniconda] using the `pip` command of the c
 
 ### EXECUTION
 
-To execute the program in your machine use the _run\_ini.sh_ file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to _job.srun_. This are the default settings for the both files:
+To execute the program in your machine use the `run_ini.sh` file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to `job.srun`. This are the default settings for the both files:
 
 ```bash
 seq='WT' #protein name (WT or Shuffle)
@@ -46,7 +46,7 @@ Since the code must generate the initial configurations and then take them to eq
 
 ### RESULTS
 
-The program will return a directory named `config` containing the initial configurations before and after equilibrium (i.e. _top\_0.50.pdb_, _top\_eq\_0.50.pdb_ for a system with 50\% of the chains forming the cluster). As previously mentioned, the code also generates a `.dcd` with a 100 frames from the initial position to equilibrium (following the previous example, _traj\_0.50.dcd_). Use the trajectory file to set the number of steps needed by your system to reach equilibrium.
+The program will return a directory named `/config` containing the initial configurations before and after equilibrium (i.e. `top_0.50.pdb`, `top_eq\_0.50.pdb` for a system with 50\% of the chains forming the cluster). As previously mentioned, the code also generates a `.dcd` with a 100 frames from the initial position to equilibrium (following the previous example, `traj_0.50.dcd`). Use the trajectory file to set the number of steps needed by your system to reach equilibrium.
 
 *NOTE:* _in order to visualize if the chains have reached equilibrium we used [VMD] viewer using the beta mode from graphics representation. Since we wanted a different color for each aminoacid from top to bottom, the b-factor of every particle of the chain was changed in order to do it._
 
