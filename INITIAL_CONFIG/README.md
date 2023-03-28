@@ -52,6 +52,15 @@ The program will return a directory named `/config` containing the initial confi
 
 [VMD]: https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
 
+## BSTATES REPOSITORY
+
+Following with the idea of generating different configurations in order to run the _WESTPA_ simulation, since westpa requires a `/bstates` directory with all the initial states, this can be generated using the program `bstates.py`.
+
+Once the `/config` directory has been created, open `bstates.py` and set the proper values for the variables `windows` and `name` (default are set to 6 and 'WT' respectively). After that you can run the script in the `/INITIAL_CONFIG` directory.
+
+The generated directory contains all necessary files for _WESTPA_ to read and none of them should be removed! The `pcoord` used is the size of the cluster (radius) of each configuration. 
+
+NOTE: _If you run again `bstates.py`, the previous `/bstates`directory will be permanently removed. The `bstates.txt` file is generated taking into account that each configuratioon has the same probability but this can be changed manually._
 
 
 
