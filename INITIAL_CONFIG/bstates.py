@@ -21,8 +21,6 @@ import shutil
 # parser.add_argument('--name',nargs='?',const='', type=str)
 # args = parser.parse_args()
 
-name='WT'
-
 
 def get_traj(filename,top):
     
@@ -255,6 +253,27 @@ def clust(pos,dist,min_size):
         return clusters,np.array(centers)
 
 def directories(windows,name):
+    
+    """
+    Creates the bstates directory necessary for the performance
+    of a westpa simulation. Notice that the pcoord of the system
+    is the radius of the biguer cluster.
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        windows: integer. Number of initial configurations that the /config 
+                 directory contains.              
+        
+        name: str. Name of the protein used in the generation of the initial config.
+       
+    OUTPUT:
+    --------
+        /bstates: directory contining all the necessary files for the westpa 
+                  simulation bstate directory (use the generated directory on 
+                  your westpa instead of the default). 
+                
+    """
     
     print('creating /bstates directory')
 
