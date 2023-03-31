@@ -1,15 +1,7 @@
-# Basic WESTPA tutorial: Na+ Cl- association
-This tutorial is meant to introduce new users to the WESTPA software for running Weighted Ensemble (WE) simulations.
+# WESTPA SIMULATION OF PEPTIDE AGREGATION
 
-## Tutorial files
+This repository contains all the necessary files to perform the _WESTPA simulation of peptide agregation_ (WSPA).
 
-All files necessary for completing the tutorial can be found in this directory.
+## CONTAINS
 
-## Full tutorial 
-
-Find the full tutorial in the LiveComs journal article on best practices for Weighted Ensemble simulations. (Link to be added)
-
-## Authors
-
-* **Anthony Bogetti** - *Primary work* - [atbogetti](https://github.com/atbogetti)
-* **Alex DeGrave** - *Preliminary work* - [ajd98](https://github.com/ajd98)
+`/bstates`: repository containning  
