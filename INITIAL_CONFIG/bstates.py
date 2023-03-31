@@ -292,6 +292,8 @@ def directories(windows,name):
     
     proteins = initProteins()
     fasta_WT = proteins.loc[name].fasta
+    
+    bins=[]
 
     for config in range(windows):
         perc = f'{config/(windows-1):.2f}' #name of the end of the config
@@ -301,7 +303,7 @@ def directories(windows,name):
         os.mkdir('bstates/'+directory)
         print('/'+directory)
         
-        shutil.copyfile('config/'+file,'bstates/'+directory+'/'+file) #copy the file into the dir
+        shutil.copyfile('config/'+file,'bstates/'+directory+'/top.pdb') #copy the file into the dir
         
         file = 'config/'+file
 
@@ -311,7 +313,7 @@ def directories(windows,name):
 
         pos=CM(fasta_WT,prot)
 
-        cl,centers=clust(pos,7.,2)
+        cl,centers=clust(pos,7.5,2)
 
         print('Number of clusters: ',len(cl['frame 0']))
         rad = []
@@ -319,14 +321,16 @@ def directories(windows,name):
             print(f'cluster {i:} size: {cl["frame 0"][i]["size"]:} and radius: {cl["frame 0"][i]["rad"]:.6f}')
             
             rad.append(cl["frame 0"][i]["rad"])   
-        with open('bstates/'+directory+'/pcoord.ini','w') as f:
+        with open('bstates/'+directory+'/pcoord.init','w') as f:
             try:
                 f.write(str(np.max(rad)))
+                bins.append(np.max(rad))
             except ValueError:
                 f.write(str(0.))
+                bins.append(0.)
             pass
                 
-        with open('bstates/pcoord.ini','a') as f:
+        with open('bstates/pcoord.init','a') as f:
             try:
                 f.write(str(np.max(rad))+'\n')
             except ValueError:
@@ -337,8 +341,29 @@ def directories(windows,name):
             f.write(str(config)+' '+str(round(1/windows,2))+' '+directory+'\n')
                 
         print('')
-
         
+    #suggested bins
+        
+    bin_min = np.min(bins)
+    bin_max = np.max(bins)+5.
+    
+    sug_bins=[]
+    
+    for i in range(windows):
+        bin_lim = round((bin_max-bin_min)/(windows-1)*i,2)
+        sug_bins.append(bin_lim)
+    
+    sug_bins.append('inf')
+    
+    string=''
+
+    for i in sug_bins:
+        
+        if i == 'inf':
+            string += i
+        else:
+            string += str(i)+','
+    print('suggested bin distribution: ['+string+']')
         
         
 
