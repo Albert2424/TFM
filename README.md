@@ -15,4 +15,5 @@ For all codes used in this work, if a protein different than _WT_ and _shuffle_ 
 ### CONTENTS
 
 1. `/INITIAL_CONFIG`: Directory containning all the necessary files to generate the initial configurations of the system to use in the WESTPA enviorement.
+2. `/WESTPA`: Directory containning all the necessary files and directories to perform a _WESTPA_ simulation of peptide agregation.  
 
