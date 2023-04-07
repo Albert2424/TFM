@@ -83,5 +83,20 @@ You should also consider changing the dimension and number of data points of the
 
 ## EXECUTION
 
+To execute the program in a cluster (i.e. powered by Slurm) then use something similar to `runwe.slurm` and the `Makefile` using `make run`. 
+
+Prior to starting the siulation you may want to change the parameters of the simulation. This can be done by modifying the variables of the `runseg.sh` file in the `/westpa_scripts` directory. This are the default settings:
+
+```bash
+name='WT'      #name of the studied protein (str)
+temp=320       #temperature (int)
+cutoff=4.0     #cutoff (float)
+tau=400        #steps of the simulation (tau in westpa) (int)
+n_chains=100   #number of chains of the system (int)
+```
+To look up for errors in the process look at the different `.log` files generated, the `.err` file or in the `/seg_log` directory that is generated with the _logs_ of every segment.
+
+## RESULTS
+
 
 
