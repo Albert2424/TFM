@@ -28,7 +28,7 @@ All packages may be installed using [Miniconda] with the `pip` command of the co
 
 ### EXECUTION
 
-To execute the program in your machine use the `run_ini.sh` file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to `job.srun`. This are the default settings for the both files:
+To execute the program in your machine use the `run_ini.sh` file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to `job.srun`. This are the default settings for both files:
 
 ```bash
 seq='WT' #protein name (WT or Shuffle)
