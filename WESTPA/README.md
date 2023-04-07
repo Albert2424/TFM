@@ -9,14 +9,18 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
  1. Add all the basis states you may need (initial configurations) in different directories.
  2. Add a `pcoord.init` file to each directory containning the reaction coordinate (pcoord) of the corresponding initial configuration.
  3. Open `bstates.txt` and add all the directories that are part of the simulation:
-```
+  ```
    ID      probability     filename
    0       0.17            dir1
    1       0.17            dir2
    .       .               .
    .       .               .
    .       .               .
-```
-The probability is automatically renormalized to 1 so it does not matter if it does not add up to 1.
+  ```
+  The probability is automatically renormalized to 1 so it does not matter if it does not add up to 1.
          
 4. Open `pcoord.init` file from the `/bstates` directory and add the pcoord of every basis state.
+
+Notice that the `/bstates` directory can be created using the program `[bstates.py]` on the `/INITIAL_CONFIG` directory.
+
+[bstates.py]: https://github.com/Albert2424/TFM/blob/main/INITIAL_CONFIG/bstates.py
