@@ -3,6 +3,27 @@
 This repository contains all the necessary files to perform the _[WESTPA] simulation of peptide agregation_ (WSPA).
 
 [WESTPA]: https://github.com/westpa/westpa
+
+## REQUIREMENTS
+
+Since _WESTPA_ will be used, follow the specific [requirements] of the library. In addition, for the simulation codes other important packages needed are:
+
+* OpenMM ([8.0.0])
+* MDAnalysis ([2.4.2]) 
+* MDtraj ([1.9.7])
+
+[8.0.0]: http://docs.openmm.org/7.0.0/userguide/application.html
+[2.4.2]: https://www.mdanalysis.org/pages/installation_quick_start/
+[1.9.7]: https://www.mdtraj.org/1.9.7/installation.html
+
+All packages may be installed using [Miniconda] with the `pip` command of the conda prompt.
+
+[Miniconda]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+
+Make sure that all this packages are included in your _WESTPA_ enviorenment.
+
+[requirements]: https://github.com/westpa/westpa#requirements
+
 ## CONTAINS
 
 - **`/bstates`:** Repository containing the `bstates.txt` and `pcoord.init` files and the repositories containing every initial configuration (in `.pdb` format) and a `pcoord.init` file with the reaction coordinate of said configuration. Here's a brief explanation on how to create manually the `/bstates` directory: 
@@ -38,5 +59,18 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 
 [here]: https://github.com/KULL-Centre/papers/tree/main/2022/CG-cutoffs-Tesei-et-al/MC/code
 
-- **`/westpa_scripts`:**
+- **`/westpa_scripts`:** This directory contains all necessary files to perform the _WESTPA_ simulation. Most of them are default files that must not be modified. However, to make _WESTPA_ perform the desired simulation we need to modify the `runse.sh` file that controlls how each segment is simulated. In order to do it you must follow these steps:
+
+1. Change every _simulate.py_ for your simulation code. Notice that when the simulation code is called some arguments are added. If your code does not need this arguments you must erase them. On the top of the `runseg.sh` file the necessary variables needed in order to perform the simulation are defined.   
+2. Change _cluster.py_ for your code that gets the pcoord. As in the previous case some arguments where added.
+3. You need to deliver to _WESTPA_ all the necessary files to perform the simulation. you can do this adding (or eraseing) commands like the following: `sed "s/RAND/$WEST_RAND16/g" $WEST_SIM_ROOT/common_files/file_to_be_added > file_to_be_added`
+4. If the name of your basis states (and generated checkpoints) is not _top.pdb_ then change all _top.pdb_ for the desired name. 
+
+
+
+
+
+
+
+[here]: https://westpa.github.io/westpa/users_guide/west/setup.html#configuration-file
 
