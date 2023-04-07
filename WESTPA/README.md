@@ -59,7 +59,7 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 
 [here]: https://github.com/KULL-Centre/papers/tree/main/2022/CG-cutoffs-Tesei-et-al/MC/code
 
-- **`/westpa_scripts`:** This directory contains all necessary files to perform the _WESTPA_ simulation. Most of them are default files that must not be modified. However, to make _WESTPA_ perform the desired simulation we need to modify the `runse.sh` file that controlls how each segment is simulated. In order to do it you must follow these steps:
+- **`/westpa_scripts`:** This directory contains all necessary files to perform the _WESTPA_ simulation. Most of them are default files that must not be modified. However, to make _WESTPA_ perform the desired simulation we need to modify the `runseg.sh` file that controlls how each segment is simulated. In order to do it you must follow these steps:
 
 1. Change every _simulate.py_ for your simulation code. Notice that when the simulation code is called some arguments are added. If your code does not need this arguments you must erase them. On the top of the `runseg.sh` file the necessary variables needed in order to perform the simulation are defined.   
 2. Change _cluster.py_ for your code that gets the pcoord. As in the previous case some arguments where added.
@@ -67,10 +67,21 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 4. If the name of your basis states (and generated checkpoints) is not _top.pdb_ then change all _top.pdb_ for the desired name. 
 
 
+-**`env.sh`**,**`ini.sh`** and **`run.sh`:** This are the needed files to ensure that the _WESTPA_enviorenment is set correctly and to initialize and run the simulation. Since in this case we do not have a target state, the lines containing _TSTATE\_ARGS_ on the _w\_init_ command have been commented. If you need a target state, then uncomment these lines and specify your target state on the `tstate.file` (in the default simulation this file is useless).  
+
+-**`west.cfg`:** This is the file containing the configuration parameters for the westpa simulation. For more information look [here]. In this case [addaptative binning] (MAB) was used. The MAB needs a starting bin set. You can use the [bstates.py] program to obtain a bin set suggestion or you can modify it manually. The number of starting bins is not fixed so you can refine the bin set for your specific simulation. In the default file, the boundaries are `[0.0,0.01,5.24,10.47,15.71,20.95,26.18,inf]`. 
+
+You should also consider changing the dimension and number of data points of the pcoord (_pcoord\_dim_ and _pcoord\_len_ respectively). 
 
 
 
-
-
+[bstates.py]: https://github.com/Albert2424/TFM/blob/main/INITIAL_CONFIG/bstates.py
 [here]: https://westpa.github.io/westpa/users_guide/west/setup.html#configuration-file
+[addaptative binning]: https://westpa.readthedocs.io/en/latest/users_guide/west/setup.html#recursivebinmapper
+
+-**`runwe.slurm`:** Example file to run your simulation on  a cluster powered by slurm.
+
+## EXECUTION
+
+
 
