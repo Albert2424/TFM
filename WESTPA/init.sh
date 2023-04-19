@@ -14,6 +14,5 @@ BSTATE_ARGS="--bstate-file $WEST_SIM_ROOT/bstates/bstates.txt"
 # Run w_init
 w_init \
   $BSTATE_ARGS \
-  #$TSTATE_ARGS \
-  #--segs-per-state 5 \
-  #--work-manager=threads "$@"
+  --segs-per-state 5 \
+  --work-manager=threads "$@"
