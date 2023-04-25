@@ -28,7 +28,21 @@ All packages may be installed using [Miniconda] with the `pip` command of the co
 
 ### EXECUTION
 
-To execute the program in your machine use the `run_ini.sh` file. If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to `job.srun`. This are the default settings for both files:
+To execute the program in your machine use the `run_ini.sh` file.
+
+
+```Shell
+./run_ini.sh
+```
+
+If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to `job.srun`. 
+
+
+```Shell
+sbatch job.srun
+```
+
+This are the default settings for both files:
 
 ```bash
 seq='WT' #protein name (WT or Shuffle)
@@ -41,7 +55,7 @@ steps=4000000 #number of steps of the simulation to reach equilibrium
 
 ```
 
-Since the code must generate the initial configurations and then take them to equilibrium, this may take a while. The code also generates a `.dcd` file so you can adapt the number of steps to reach equilibrium. The code generates as many initial configurations as windows (`wind`) demanded, each configuration with a certain number of chains already in a cluster.
+Since the code must generate the initial configurations and then take them to equilibrium, this may take a while. The code also generates a `.dcd` file so you can adapt the number of steps to reach equilibrium. The code generates as many initial configurations as windows (`wind`) demanded, each configuration starting with a certain number of chains already in a cluster (close to each other).
 
 
 ### RESULTS
@@ -56,12 +70,31 @@ The program will return a directory named `/config` containing the initial confi
 
 Following with the idea of generating different configurations in order to run the _WESTPA_ simulation, since westpa requires a `/bstates` directory with all the initial states, this can be generated using the program `bstates.py`.
 
-Once the `/config` directory has been created, open `bstates.py` and set the proper values for the variables `windows` and `name` (default are set to 6 and 'WT' respectively). After that you can run the script in the `/INITIAL_CONFIG` directory.
+### REQUIREMENTS
+
+If you have executed on the same machine the codes to generate the `/config` directory, you will be able to run the code in order to generate the `/bstates` directory. If not, the requirements are the same as in the [previous case] plus executing the `analyse_ini.py` program in order to initialize its functions:
+
+
+```Shell
+python analyse_ini.py
+```
+
+Notice that it is needed that the `/config` directory exists. If not, please generate it before running `bstates.py`.
+
+### EXECUTION
+
+Once the `/config` directory has been created, open `bstates.py` and set the proper values for the variables `windows` and `name` (default are set to 6 and 'WT' respectively). After that you can run the script in the `/INITIAL_CONFIG` directory using a shell:
+
+```Shell
+python bstates.py
+```
+
+### RESULTS
 
 The generated directory contains all necessary files for _WESTPA_ to read and none of them should be removed! The `pcoord` used is the size of the cluster (radius) of each configuration. 
 
 NOTE: _If you run again `bstates.py`, the previous `/bstates`directory will be permanently removed. The `bstates.txt` file is generated taking into account that each configuration has the same probability but this can be changed manually by modifying the second column of each initial configuration._
 
-
+[previous case]: https://github.com/Albert2424/TFM/blob/main/INITIAL_CONFIG/README.md#requirements
 
 
