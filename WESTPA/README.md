@@ -1,9 +1,36 @@
 # WESTPA SIMULATION OF PEPTIDE AGREGATION
 
 This repository contains all the necessary files to perform the _[WESTPA] simulation of peptide agregation_ (WSPA).
-
 [WESTPA]: https://github.com/westpa/westpa
 
+## TABLE OF CONTENTS
+1. [ REQUIREMENTS ](#1-req)
+2. [ CONTAINS ](#2-contains)
+
+	2.1 [ `/bstats` ](#2.1-bs)
+	
+	2.2 [ `/common_files` ](#2.2-cf)
+	
+	2.3 [ `/westpa_scripts` ](#2.3-ws)
+	
+	2.4 [ `env.sh`,`ini.sh` and `run.sh` ](#2.4-eir)
+	
+	2.5 [ `west.cfg` ](#2.5-w)
+	
+	2.6 [ `runwe.slurm` ](#2.6-r)
+	
+	2.7 [ `input.dat` and `set_input.sh` ](#2.7-is)
+	
+3. [ EXECUTION ](#3-e)
+
+	3.1 [ Cluster ](#3.1-c)
+	
+	3.2 [ Local Machine ](#3.2-lm)
+
+4. [ RESULTS ](#4-r)
+
+
+<a name="1-req"></a>
 ## REQUIREMENTS
 
 Since _WESTPA_ will be used, follow the specific [requirements] of the library. In addition, for the simulation codes other important packages needed are:
@@ -24,8 +51,9 @@ Make sure that all this packages are included in your _WESTPA_ enviorenment.
 
 [requirements]: https://github.com/westpa/westpa#requirements
 
+<a name="2-contains"></a>
 ## CONTAINS
-
+<a name="2.1-bs"></a>
 - **`/bstates`:** Repository containing the `bstates.txt` and `pcoord.init` files and the repositories containing every initial configuration (in `.pdb` format) and a `pcoord.init` file with the reaction coordinate of said configuration. Here's a brief explanation on how to create manually the `/bstates` directory: 
  1. Add all the basis states you may need (initial configurations) in different directories. All the basis states must have the same name, in this case `top.pdb` (if you want to use a different name, you must change other files for your simulation to work).
  2. Add a `pcoord.init` file to each directory containning the reaction coordinate (pcoord) of the corresponding initial configuration.
@@ -48,7 +76,7 @@ Notice that the `/bstates` directory can be created using the program [bstates.p
 
 
 <br></br>
-
+<a name="2.2-cf"></a>
 - **`/common_files`:** This directory contains the necessary _OpenMM_ files required to perform the simmulation and also the `bstate.pdb` file which contains the topology of the system. Eventhough it seems like it is not being used in the _openMM_ simulation, the `bstate.pdb` is required for _WESTPA_ to know the topology of the system. Basically you can use any `.pdb` file which contains a frame of your system. The default file is equivalent to the equilibrated configuration with no cluster formation. To modify this directory follow these steps:
 
 1. Add all necessary files to perform the simulation. In our case they are
@@ -62,7 +90,7 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 [here]: https://github.com/KULL-Centre/papers/tree/main/2022/CG-cutoffs-Tesei-et-al/MC/code
 
 <br></br>
-
+<a name="2.3-ws"></a>
 - **`/westpa_scripts`:** This directory contains all necessary files to perform the _WESTPA_ simulation. Most of them are default files that must not be modified. However, to make _WESTPA_ perform the desired simulation we need to modify the `runseg.sh` file that controlls how each segment is simulated. In order to do it you must follow these steps:
 
 1. Change every _simulate.py_ for your simulation code. Notice that when the simulation code is called some arguments are added. If your code does not need this arguments you must erase them. On the top of the `runseg.sh` file the necessary variables needed in order to perform the simulation are defined.   
@@ -71,11 +99,11 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 4. If the name of your basis states (and generated checkpoints) is not _top.pdb_ then change all _top.pdb_ for the desired name. 
 
 <br></br>
-
+<a name="2.4-eir"></a>
 - **`env.sh`**,**`ini.sh`** and **`run.sh`:** This are the needed files to ensure that the _WESTPA_enviorenment is set correctly and to initialize and run the simulation. Since in this case we do not have a target state, the lines containing _TSTATE\_ARGS_ on the _w\_init_ command have been commented. If you need a target state, then uncomment these lines and specify your target state on the `tstate.file` (in the default simulation this file is useless).  
 
 <br></br>
-
+<a name="2.5-w"></a>
 - **`west.cfg`:** This is the file containing the configuration parameters for the westpa simulation. For more information look [here]. In this case [addaptative binning] (MAB) was used. The MAB needs a starting bin set. You can use the [bstates.py] program to obtain a bin set suggestion or you can modify it manually. The number of starting bins is not fixed so you can refine the bin set for your specific simulation. In the default file, the boundaries are `[0.0,inf]`. 
 
 You should also consider changing the dimension and number of data points of the pcoord (_pcoord\_dim_ and _pcoord\_len_ respectively). 
@@ -87,16 +115,16 @@ You should also consider changing the dimension and number of data points of the
 [addaptative binning]: https://westpa.readthedocs.io/en/latest/users_guide/west/setup.html#recursivebinmapper
 
 <br></br>
-
+<a name="2.6-r"></a>
 - **`runwe.slurm`:** Example file to run your simulation on  a cluster powered by slurm. Notice that the name of the job will always be the name of the repository containing the simulation.
 
 <br></br>
-
-- **`input.dat`**,**set_input.sh:** Files containig the most relevant input changes that may be modified for each simulation. 
-
+<a name="2.7-is"></a>
+- **`input.dat`** and **`set_input.sh`:** Files containig the most relevant input changes that may be modified for each simulation. 
+<a name="3-e"></a>
 ## EXECUTION
-
-### CLUSTER
+<a name="3.1-c"></a>
+### Cluster
 
 Prior to starting the siulation you may want to change the parameters of the simulation. This can be done by modifying the variables of the `input.dat` file. The input file is divided in 3 section: one for the simulation parameters, one for the westpa configuration and one for the cluster configuration. This are the default settings:
 
@@ -150,7 +178,8 @@ make
 
 If you want to cancel you job you may use `make cancel`. In addition you can clean the results of a previous simulation using `make clean`. To look up for errors in the process look at the different `.log` files generated, the `.err` file or in the `/seg_log` directory that is generated with the _logs_ of every segment.
 
-### LOCAL MACHINE
+<a name="3.2-lm"></a>
+### Local Machine
 
 Eventhough it is not as efficient as the use of a cluster, if you want to do some testing using your machine you may want to use:
 
@@ -170,5 +199,5 @@ If you need to update the input, use (before the previous steps):
 ```
 
 Notice that you still need the `runwe.slurm` file or you can erase the last line of the `set_input.sh` file.
-
+<a name="4-r"></a>
 ## RESULTS
