@@ -69,7 +69,7 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 
 - **`env.sh`**,**`ini.sh`** and **`run.sh`:** This are the needed files to ensure that the _WESTPA_enviorenment is set correctly and to initialize and run the simulation. Since in this case we do not have a target state, the lines containing _TSTATE\_ARGS_ on the _w\_init_ command have been commented. If you need a target state, then uncomment these lines and specify your target state on the `tstate.file` (in the default simulation this file is useless).  
 
-- **`west.cfg`:** This is the file containing the configuration parameters for the westpa simulation. For more information look [here]. In this case [addaptative binning] (MAB) was used. The MAB needs a starting bin set. You can use the [bstates.py] program to obtain a bin set suggestion or you can modify it manually. The number of starting bins is not fixed so you can refine the bin set for your specific simulation. In the default file, the boundaries are `[0.0,0.01,5.24,10.47,15.71,20.95,26.18,inf]`. 
+- **`west.cfg`:** This is the file containing the configuration parameters for the westpa simulation. For more information look [here]. In this case [addaptative binning] (MAB) was used. The MAB needs a starting bin set. You can use the [bstates.py] program to obtain a bin set suggestion or you can modify it manually. The number of starting bins is not fixed so you can refine the bin set for your specific simulation. In the default file, the boundaries are `[0.0,inf]`. 
 
 You should also consider changing the dimension and number of data points of the pcoord (_pcoord\_dim_ and _pcoord\_len_ respectively). 
 
