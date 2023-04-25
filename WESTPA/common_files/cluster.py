@@ -16,7 +16,7 @@ from analyse import *
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument('--name',nargs='?',const='', type=str)
+parser.add_argument('--seq',nargs='?',const='', type=str)
 args = parser.parse_args()
 
 # name='WT'
@@ -257,7 +257,7 @@ def clust(pos,dist,min_size):
 
 
 proteins = initProteins()
-fasta_WT = proteins.loc[args.name].fasta
+fasta_WT = proteins.loc[args.seq].fasta
 
 filename = "parent.pdb"
 

@@ -44,9 +44,9 @@ def initProteins():
     proteins.loc['WT'] = dict(eps_factor = 0.2, pH = 8.0, fasta= list(fasta_WT), ionic=0.05)
     proteins.loc['shuffle'] = dict(eps_factor = 0.2, pH = 8.0, fasta= list(fasta_shuffle), ionic=0.05)
     return proteins
-# #%%
-# proteins = initProteins()
-# proteins.to_pickle('proteins.pkl')
+# #%% Create pickle file
+proteins = initProteins()
+proteins.to_pickle('proteins.pkl')
 # #%%
 
 def genParamsLJ(df,name,prot):

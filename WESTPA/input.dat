@@ -1,0 +1,24 @@
+############### SIMULATION INPUT ############################
+
+seq='WT'       #name of the studied protein (str)
+temp=320       #temperature (int)
+cutoff=4.0     #cutoff (float)
+tau=400        #steps of the simulation (tau in westpa) (int)
+n_chains=100   #number of chains of the system (int)
+
+############### WESTPA CONFIGURATION ########################
+
+#number of required westpa iterations
+    max_total_iterations: 100
+#same (or higher) as slurm --time
+    max_run_wallclock:    72:00:00
+#name of the westpa .h5 file
+    west_data_file: west.h5
+#number of adaptative bins used:
+            nbins: [30]
+
+############### SLURM #######################################
+
+#SBATCH --time=06:00:00
+
+
