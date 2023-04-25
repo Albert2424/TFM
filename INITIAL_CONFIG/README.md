@@ -96,5 +96,3 @@ The generated directory contains all necessary files for _WESTPA_ to read and no
 NOTE: _If you run again `bstates.py`, the previous `/bstates`directory will be permanently removed. The `bstates.txt` file is generated taking into account that each configuration has the same probability but this can be changed manually by modifying the second column of each initial configuration._
 
 [previous case]: https://github.com/Albert2424/TFM/blob/main/INITIAL_CONFIG/README.md#requirements
-
-
