@@ -12,7 +12,7 @@ import numpy as np
 import mdtraj as md
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN,KMeans
-from analyse import *
+from analyse_ini import *
 from argparse import ArgumentParser
 import os
 import shutil
