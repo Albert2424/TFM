@@ -10,8 +10,8 @@ clust:
 cancel:
 	scancel -n $(shell basename "`pwd`")
 analyse:
-	w_pdist
-	plothist evolution pdist.h5
+	wedap -h5 west.h5 -dt evolution -o hist_evo.pdf
+	wedap -h5 west.h5 -dt average -pm line -o hist_av.pdf
 	
 help:
 	@echo -e '################# HELP ##################'
@@ -20,5 +20,5 @@ help:
 	@echo -e '  clust : provides information of the slurm queue.'
 	@echo -e '  clean : erases all files produced on the previous simulation.'
 	@echo -e ' cancel : cancels the job.'
-	@echo -e 'analyse : provides a 1D energy plot.'
+	@echo -e 'analyse : provides 1D energy plot and average plot.'
 	@echo ''
