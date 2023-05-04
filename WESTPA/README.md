@@ -29,6 +29,10 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 	3.2 [ Local Machine ](#3.2-lm)
 
 4. [ RESULTS ](#4-r)
+	
+	4.1 [ Plots using wedap ](#4.1-wedap)
+	
+	4.2 [ Plots using w_pdist and plothist ](#4.2-w_pdist)
 
 
 <a name="1-req"></a>
@@ -155,7 +159,7 @@ n_chains=⏩100⏪   #number of chains of the system (int)
 #SBATCH --time=⏩08:00:00⏪
 ```
 
-Notice that only the values between arrows (`⏩⏪`) may be changed for the code to work properly. If for any reason you need to modify the `ẁest.cfg` file (or any of the other two), check if the line number of the file has changed. If it is the case, modify the `set_input.sh` file in order for the lines to fit:
+Notice that only the values between arrows (`⏩⏪`) may be changed for the code to work properly. If for any reason you need to modify the `ẁest.cfg` file (or any of the other two), check if the line number of the file has changed. If it is the case, modify the `set_input.sh` file in order for the lines to fit as suggested in this example:
 
 ```
 sed -i '⏩31⏪s/.*/'"$(sed -n '12p' input.dat)"'/' west.cfg   <-- set_input.sh
@@ -177,7 +181,7 @@ or
 make
 ```
 
-If you want to cancel you job you may use `make cancel`. In addition you can clean the results of a previous simulation using `make clean`. To look up for errors in the process look at the different `.log` files generated, the `.err` file or in the `/seg_log` directory that is generated with the _logs_ of every segment.
+If you want to cancel you job you may use `make cancel`. In addition you can clean the results of a previous simulation using `make clean`. To look up for errors in the process look at the different `.log` files generated, the `.err` file or in the `/seg_log` directory that is generated with the _logs_ of every segment. If you are debugging your program consider seting to 1 the debug options in the `west.cfg` file. 
 
 <a name="3.2-lm"></a>
 ### Local Machine
@@ -202,3 +206,49 @@ If you need to update the input, use (before the previous steps):
 Notice that you still need the `runwe.slurm` file or you can erase the last line of the `set_input.sh` file.
 <a name="4-r"></a>
 ## RESULTS
+
+Once the simulation finishes, a file named `west.h5` (or the name you have set in the `input.dat` file) is generated. This file has all the information of the simulation and can be analysed using the _westpa_ package itself. However, another option is to use the [ `wedap` package ] which basically makes it easier to make the plots.
+
+_NOTE: the following sections consider that the name of the _westpa_ file is the default `west.h5`. If it is not your case, you may change this name in the `Makefile`._
+
+[ `wedap` package ]: https://pypi.org/project/wedap/
+
+<a name="4.1-wedap"></a>
+### Plots using wedap 
+
+The fastest way to plot both the average plot and evolution plot is to use the Makefile option in the same directory containing the `west.h5` file:
+
+```Shell
+make analyse
+``` 
+This will generate `hist_evo.pdf` and `hist_av.pdf` which are the 1D energy evolution for every iteration including the value of the pcoord and the average energy for every pcoord respectively. If you need different options use:
+
+```Shell
+wedap --help
+```
+To display all the available options.  
+
+<a name="4.2-w_pdist"></a>
+### Plots using w_pdist and plothist 
+
+Another option is to use the tools provided by _westpa_ itself. You can rapidly plot what is needed if you use:
+
+
+```Shell
+w_pdist
+```
+
+And then use the generated `pdist.h5` file with plothist just like:
+
+
+```Shell
+plothist pdist.h5 evolution -o hist_evo.pdf
+```
+
+```Shell
+plothist pdist.h5 average -o hist_av.pdf
+```
+
+Use the `--help` option in both cases to obtain more information or look at the [ westpa manual ].
+
+[ westpa manual ]: https://westpa.readthedocs.io/_/downloads/en/stable/pdf/
