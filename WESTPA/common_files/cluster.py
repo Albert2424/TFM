@@ -200,15 +200,24 @@ def clust(pos,dist,min_size):
     OUTPUT:
     --------
         clusters: dictionary containing every cluster of the frame. Each cluster 
-        has its own dictionary that contains the chains that are part of it, the
-        position of the center of mass of said chains and the size and radius
-        of the cluster:
+                  has its own dictionary that contains the chains that are part of it, the
+                  position of the center of mass of said chains and the size and radius
+                  of the cluster:
             
-            clusters = {0:{'chains':[0,1,2...],
-                           'pos':[np.array(3),np.array(3),..],
-                           'size': 14,
-                           'radius': 1.453},
-                        1:{...}
+            clusters = {'frame 0':{0:{'chains':[0,1,2...],
+                                     'pos':[np.array(3),np.array(3),..],
+                                     'size': 14,
+                                     'radius': 1.453},
+                                   
+                                   1:{...}
+                                   
+                                   .
+                                   .
+                                   .
+                                   }
+                        .
+                        .
+                        .
                         }
             
         centers: array containing the xyz coordinates of every cluster center.
@@ -219,6 +228,7 @@ def clust(pos,dist,min_size):
     clusters={}
     
     for frame in pos:
+        # print(frame)
         clusters[frame] = {}
         
         #calculate the different clusters
@@ -240,45 +250,98 @@ def clust(pos,dist,min_size):
         #RADIUS OF THE CLUSTER
         
         # Get the centers of each cluster
-        centers = []
+        
         for frame in clusters:
+            centers = []
             for clust in clusters[frame]:
                 centers.append([np.mean(np.array(clusters[frame][clust]['pos'])[:,0]),
                                 np.mean(np.array(clusters[frame][clust]['pos'])[:,1]),
                                 np.mean(np.array(clusters[frame][clust]['pos'])[:,2])])
                   
                 distances = np.linalg.norm(np.array(clusters[frame][clust]['pos']) - centers[clust], axis=1)
-                clusters[frame][clust]['rad'] = np.max(distances)#add the radius        
+                
+                #rotation radius
+                # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
+                
+                #hidrodynamic radius
+                clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
                     
-        return clusters,np.array(centers)
+    return clusters,np.array(centers)
 
+
+def generate_pcoord(frame,cl):
     
+    """
+    Detects clusters formed in every frame of the simulation.
+    -------------------------------------------------------------
     
-
-
-proteins = initProteins()
-fasta_WT = proteins.loc[args.seq].fasta
-
-filename = "parent.pdb"
-
-ipos=get_initial_pos(filename)
-
-prot=protein(ipos,100)
-
-pos=CM(fasta_WT,prot)
-
-cl,centers=clust(pos,7.5,2)
-
-print('Number of clusters: ',len(cl['frame 0']))
-rad = []
-for i in cl['frame 0']:
-    print(f'cluster {i:} size: {cl["frame 0"][i]["size"]:} and radius: {cl["frame 0"][i]["rad"]:.6f}')
-    
-    rad.append(cl["frame 0"][i]["rad"])
-
-with open('dist.dat','w') as file:
-    try:
-        file.write(str(np.max(rad)))
-    except ValueError:
-        file.write(str(0.))
+    INPUT:
+    -------
+        frame: name of the frame that you want the pcoord to be obtained from.
+               It should be a string like "frame 0", "frame 1", etc
         
+        cl: dictionary containing every cluster of the frame. Each cluster 
+            has its own dictionary that contains the chains that are part of it, the
+            position of the center of mass of said chains and the size and radius
+            of the cluster:
+                
+                clusters = {'frame 0':{0:{'chains':[0,1,2...],
+                                         'pos':[np.array(3),np.array(3),..],
+                                         'size': 14,
+                                         'radius': 1.453},
+                                       
+                                       1:{...}
+                                       
+                                       .
+                                       .
+                                       .
+                                       }
+                            .
+                            .
+                            .
+                            }
+               
+    OUTPUT:
+        dist: pcoord obtained, corresponds to the radius of the bigger cluster.
+    --------
+
+    
+    """
+    
+    print(f'Number of clusters in frame {frame:}: ',len(cl[frame]))
+    rad = []
+    for i in cl[frame]:
+        print(f'cluster {i:} size: {cl[frame][i]["size"]:} and radius: {cl[frame][i]["rad"]:.6f}')
+        
+        rad.append(cl[frame][i]["rad"])
+    
+    print('')
+    try:
+        dist = np.max(rad)
+    except ValueError:
+        dist = 0.
+        
+    return dist
+
+
+if __name__ == "__main__":
+    proteins = initProteins()
+    # fasta_WT = proteins.loc[args.seq].fasta
+    fasta_WT = proteins.loc['WT'].fasta
+    
+    filename = "top.pdb"
+    traject = 'traj.dcd'
+    
+    ipos=get_traj(traject,filename)
+    
+    prot=protein(ipos,100)
+    
+    pos=CM(fasta_WT,prot)
+    
+    cl,centers=clust(pos,7.5,2)
+    
+    dist1 = generate_pcoord('frame 0',cl)
+    dist2 = generate_pcoord('frame 5',cl)
+    dist3 = generate_pcoord('frame 9',cl)
+    d_arr = [dist1,dist2,dist3]       
+    np.savetxt("dist.dat", d_arr)

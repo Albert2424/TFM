@@ -3,7 +3,7 @@ run:
 	sbatch -J $(shell basename "`pwd`") runwe.slurm
 
 clean:
-	rm -f *.h5 *.log *.err *.out
+	rm -f *.h5 *.log *.err *.out *.pdf
 	rm -r traj_segs seg_logs istates
 clust:
 	@squeue -o "%.10i %.9P %.8j %.8T %.6M %.10l %.6D"

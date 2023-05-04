@@ -2,10 +2,10 @@
 
 #read the simulation variables
 
-seq='WT'      #name of the studied protein (str)
+seq='WT'       #name of the studied protein (str)
 temp=320       #temperature (int)
 cutoff=4.0     #cutoff (float)
-tau=2000        #steps of the simulation (tau in westpa) (int)
+tau=4000        #steps of the simulation (tau in westpa) (int)
 n_chains=100   #number of chains of the system (int)
 
 if [ -n "$SEG_DEBUG" ] ; then
@@ -44,5 +44,6 @@ python cluster.py --seq $seq > clust.log
 cat dist.dat > $WEST_PCOORD_RETURN
 
 # Clean up
-rm -f *.py *.csv *.pkl dist.dat *.npy
+rm -f *.py *.csv *.pkl dist.dat *.npy *.log 
+rm -f parent.pdb bstate.pdb WT.dcd
 rm -r __pycache__
