@@ -17,9 +17,10 @@ from argparse import ArgumentParser
 import os
 import shutil
 
-# parser = ArgumentParser()
-# parser.add_argument('--name',nargs='?',const='', type=str)
-# args = parser.parse_args()
+parser = ArgumentParser()
+parser.add_argument('--seq',nargs='?',const='', type=str)
+parser.add_argument('--windows',nargs='?',const='', type=int)
+args = parser.parse_args()
 
 
 def get_traj(filename,top):
@@ -248,7 +249,12 @@ def clust(pos,dist,min_size):
                                 np.mean(np.array(clusters[frame][clust]['pos'])[:,2])])
                   
                 distances = np.linalg.norm(np.array(clusters[frame][clust]['pos']) - centers[clust], axis=1)
-                clusters[frame][clust]['rad'] = np.max(distances)#add the radius        
+                
+                #rotation radius
+                # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
+                
+                #hidrodynamic radius
+                clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
                     
         return clusters,np.array(centers)
 
@@ -366,14 +372,6 @@ def directories(windows,name):
     print('suggested bin distribution: ['+string+']')
         
         
-
-        
-        
-        
-#%%
-
-windows = 6
-name = 'WT'
-
-directories(windows,name)
+if __name__ == '__main__':
+	directories(args.windows,args.seq)
 
