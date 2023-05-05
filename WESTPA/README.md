@@ -38,15 +38,17 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 <a name="1-req"></a>
 ## REQUIREMENTS
 
-Since _WESTPA_ will be used, follow the specific [requirements] of the library. In addition, for the simulation codes other important packages needed are:
+Since _WESTPA_ will be used, follow the specific [requirements] of the library. In addition, for the simulation codes and the posterior analysis other important packages needed are:
 
 * OpenMM ([8.0.0])
 * MDAnalysis ([2.4.2]) 
 * MDtraj ([1.9.7])
+* wedap ([0.0.6])
 
 [8.0.0]: http://docs.openmm.org/7.0.0/userguide/application.html
 [2.4.2]: https://www.mdanalysis.org/pages/installation_quick_start/
 [1.9.7]: https://www.mdtraj.org/1.9.7/installation.html
+[0.0.6]: https://pypi.org/project/wedap/
 
 All packages may be installed using [Miniconda] with the `pip` command of the conda prompt.
 
