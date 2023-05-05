@@ -9,7 +9,7 @@ For all codes used in this work, if a protein different than _WT_ and _shuffle_ 
 
 1. Open `analyse.py` and add your protein to the proteins DataFrame (if you want to generate new initial configurations for WESTPA, add your protein to `analyse_ini.py` too).
 2. A new pickle from the new group of proteins will be generated if any of the `analyse` programs are used (or imported). If not, generate the new pickle in order to include the new protein. This can be done in example by running lines 48-51 on the `analyse_ini.py` and executing the cell. 
-3. Add the corresponding `residues.csv` of your protein or modify the existing file by adding your data.
+3. If you want to use different parameters for the residues, add the corresponding `residues.csv` to the directory or modify the existing file by adding your data.
 
 
 ### CONTENTS
