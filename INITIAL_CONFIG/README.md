@@ -62,7 +62,7 @@ sbatch job.srun
 ```
 
 
-### RESULTS
+## RESULTS
 
 The program will return a directory named `/config` containing the initial configurations before and after equilibrium (i.e. `top_0.50.pdb`, `top_eq\_0.50.pdb` for a system with 50\% of the chains forming the cluster). As previously mentioned, the code also generates a `.dcd` with a 100 frames from the initial position to equilibrium (following the previous example, `traj_0.50.dcd`). Use the trajectory file to set the number of steps needed by your system to reach equilibrium.
 
@@ -70,11 +70,11 @@ The program will return a directory named `/config` containing the initial confi
 
 [VMD]: https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
 
-## BSTATES REPOSITORY
+# BSTATES REPOSITORY
 
 Following with the idea of generating different configurations in order to run the _WESTPA_ simulation, since westpa requires a `/bstates` directory with all the initial states, this can be generated using the program `bstates.py`.
 
-### REQUIREMENTS
+## REQUIREMENTS
 
 If you have executed on the same machine the codes to generate the `/config` directory, you will be able to run the code in order to generate the `/bstates` directory. If not, the requirements are the same as in the [previous case] plus executing the `analyse_ini.py` program in order to initialize its functions:
 
@@ -85,7 +85,7 @@ python analyse_ini.py
 
 Notice that it is needed that the `/config` directory exists. If not, please generate it before running `bstates.py`.
 
-### EXECUTION
+## EXECUTION
 
 Once the `/config` directory has been created, you can use the following command to generate the `\bstates` directory setting the proper values for the variables `windows` (integer) and `seq` (string) (default are set to 6 and 'WT' respectively). After that you can run the script in the `/INITIAL_CONFIG` directory using a shell:
 
@@ -93,7 +93,7 @@ Once the `/config` directory has been created, you can use the following command
 python bstates.py --seq 'WT' --windows 6
 ```
 
-### RESULTS
+## RESULTS
 
 The generated directory contains all necessary files for _WESTPA_ to read and none of them should be removed! The `pcoord` used is the size of the cluster (radius) of each configuration. 
 
