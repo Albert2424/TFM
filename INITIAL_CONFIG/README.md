@@ -1,15 +1,15 @@
-## INITIAL CONFIGURATION
+# INITIAL CONFIGURATION
 
 In order to start the dynamics from different starting conditions, some specific initial distributions are generated. The aim of generating distributions with different aggregate sizes is to optimize the WESTPA simulation of the dynamics of aggregation. 
 
-To generate the initial configurations we need three codes: `init_config.py`, which provides a first spatial distribution with stiff peptide distribution and `simulate_ini.py` and `analyse_ini.py` which are meant to bring the configuration to equilibrium while maintaining the chains that are far away from the cluster fixed. Both `simulate_ini.py` and `analyse_ini.py` are adaptations of codes made by Giulio Tesei and Kresten Lindorff-Larsen on their paper _Improved Predictions of Phase Behaviour of IDPs by Tuning the Interaction Range_. See the original code in **[here]**.
+To generate the initial configurations we need three codes: `init_config.py`, which provides a first spatial distribution with stiff protein distribution and `simulate_ini.py` and `analyse_ini.py` which are meant to bring the configuration to equilibrium while maintaining the chains that are far away from the cluster fixed. Both `simulate_ini.py` and `analyse_ini.py` are adaptations of codes made by Giulio Tesei and Kresten Lindorff-Larsen on their paper _Improved Predictions of Phase Behaviour of IDPs by Tuning the Interaction Range_. See the original code in **[here]**.
 
 
 
 [here]: https://github.com/KULL-Centre/papers/tree/main/2022/CG-cutoffs-Tesei-et-al/MC/code
 
 
-### REQUIREMENTS
+## REQUIREMENTS
 
 The code has been created using _Python 3.10.9_. Other important packages needed are:
 
@@ -26,27 +26,13 @@ All packages may be installed using [Miniconda] with the `pip` command of the co
 [Miniconda]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 
 
-### EXECUTION
+## EXECUTION
 
-To execute the program in your machine use the `run_ini.sh` file.
-
-
-```Shell
-./run_ini.sh
-```
-
-If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to `job.srun`. 
-
-
-```Shell
-sbatch job.srun
-```
-
-This are the default settings for both files:
+In order to execute the program you can both use a local machine or a cluster. Notice that the execution time is quiet high so this second option is highly recomended. This are the default settings for both files:
 
 ```bash
 seq='WT' #protein name (WT or Shuffle)
-temp=300 #Temperature
+temp=320 #Temperature
 cutoff=4.0 #Cutoff distance
 wind=6 #number of windows desired for WESTPA
 n=100 #number of chains 
@@ -55,7 +41,25 @@ steps=4000000 #number of steps of the simulation to reach equilibrium
 
 ```
 
-Since the code must generate the initial configurations and then take them to equilibrium, this may take a while. The code also generates a `.dcd` file so you can adapt the number of steps to reach equilibrium. The code generates as many initial configurations as windows (`wind`) demanded, each configuration starting with a certain number of chains already in a cluster (close to each other).
+Since the code must generate the initial configurations and then take them to equilibrium, this may take a while. The code also generates a `.dcd` file so you can adapt the number of steps to reach equilibrium by analysing manually the trajectory. The code generates as many initial configurations as windows (`wind`) demanded, each configuration starting with a certain number of chains already in a cluster (close to each other) but the number of chains that form the desired cluster may differ from the expected.
+
+### Local Machine
+
+To execute the program in your machine use the `run_ini.sh` file. This file will automatically generate the necessary directories for the code to work if they do not exist. To execute the program you should use:
+
+
+```Shell
+./run_ini.sh
+```
+
+### Cluster
+
+If you want to execute the code in a cluster (i.e. powered by Slurm) then use something similar to `job.srun`. 
+
+
+```Shell
+sbatch job.srun
+```
 
 
 ### RESULTS
@@ -83,10 +87,10 @@ Notice that it is needed that the `/config` directory exists. If not, please gen
 
 ### EXECUTION
 
-Once the `/config` directory has been created, open `bstates.py` and set the proper values for the variables `windows` and `name` (default are set to 6 and 'WT' respectively). After that you can run the script in the `/INITIAL_CONFIG` directory using a shell:
+Once the `/config` directory has been created, you can use the following command to generate the `\bstates` directory setting the proper values for the variables `windows` (integer) and `seq` (string) (default are set to 6 and 'WT' respectively). After that you can run the script in the `/INITIAL_CONFIG` directory using a shell:
 
 ```Shell
-python bstates.py
+python bstates.py --seq 'WT' --windows 6
 ```
 
 ### RESULTS
