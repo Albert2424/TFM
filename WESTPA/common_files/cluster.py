@@ -341,7 +341,7 @@ if __name__ == "__main__":
     cl,centers=clust(pos,7.5,2)
     
     dist1 = generate_pcoord('frame 0',cl)
-    dist2 = generate_pcoord('frame 5',cl)
-    dist3 = generate_pcoord('frame 9',cl)
+    dist2 = generate_pcoord('frame 1',cl)
+    dist3 = generate_pcoord('frame 2',cl)
     d_arr = [dist1,dist2,dist3]       
     np.savetxt("dist.dat", d_arr)

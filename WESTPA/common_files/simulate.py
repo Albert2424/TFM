@@ -124,7 +124,7 @@ def simulate(residues,name,prot,temp,cutoff,steps,n_chains):
 
     simulation.context.setPositions(pdb.positions)
     simulation.minimizeEnergy()
-    simulation.reporters.append(app.dcdreporter.DCDReporter('{:s}.dcd'.format(name),int(steps/10)))
+    simulation.reporters.append(app.dcdreporter.DCDReporter('{:s}.dcd'.format(name),int(steps/3)))
     
     print("~~~ STARTING SIMULATION ~~~")
     simulation.reporters.append(app.statedatareporter.StateDataReporter('{:s}_{:d}.log'.format(name,temp),int(steps/10),
