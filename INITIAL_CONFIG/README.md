@@ -95,7 +95,7 @@ python bstates.py --seq 'WT' --windows 6
 
 ## RESULTS
 
-The generated directory contains all necessary files for _WESTPA_ to read and none of them should be removed! The `pcoord` used is the size of the cluster (radius) of each configuration. 
+The generated directory contains all necessary files for _WESTPA_ to read and none of them should be removed! The `pcoord` used is the size of the cluster (hydrodynamic radius) of each configuration. 
 
 NOTE: _If you run again `bstates.py`, the previous `/bstates`directory will be permanently removed. The `bstates.txt` file is generated taking into account that each configuration has the same probability but this can be changed manually by modifying the second column of each initial configuration._
 
