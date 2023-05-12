@@ -3,8 +3,10 @@
 seq='WT'       #name of the studied protein (str)
 temp=320       #temperature (int)
 cutoff=4.0     #cutoff (float)
-tau=400        #steps of the simulation (tau in westpa) (int)
+tau=4000        #steps of the simulation (tau in westpa) (int)
 n_chains=100   #number of chains of the system (int)
+L=300.         #length of the box
+rc=30.         #minimum radius to consider a chain is inside a cluster
 
 ############### WESTPA CONFIGURATION ########################
 
@@ -19,6 +21,6 @@ n_chains=100   #number of chains of the system (int)
 
 ############### SLURM #######################################
 
-#SBATCH --time=06:00:00
+#SBATCH --time=0-01:00:00
 
 
