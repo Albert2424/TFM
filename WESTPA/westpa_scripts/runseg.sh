@@ -7,6 +7,8 @@ temp=320       #temperature (int)
 cutoff=4.0     #cutoff (float)
 tau=4000        #steps of the simulation (tau in westpa) (int)
 n_chains=100   #number of chains of the system (int)
+L=300.         #length of the box
+rc=30.         #minimum radius to consider a chain is inside a cluster
 
 if [ -n "$SEG_DEBUG" ] ; then
   set -x
@@ -40,7 +42,7 @@ python simulate.py --name $seq --temp $temp --cutoff $cutoff --steps $tau --n_ch
 
 #Calculate pcoord with MDAnalysis
 python analyse.py #initialize the functions on analyse to be used in cluster.py
-python cluster.py --seq $seq > clust.log
+python cluster.py --seq $seq --rc $rc --L $L --n_chains $n_chains > clust.log
 cat dist.dat > $WEST_PCOORD_RETURN
 
 # Clean up
