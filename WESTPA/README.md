@@ -142,8 +142,10 @@ Prior to starting the siulation you may want to change the parameters of the sim
 seq=⏩'WT'⏪       #name of the studied protein (str)
 temp=⏩320⏪       #temperature (int)
 cutoff=⏩4.0⏪     #cutoff (float)
-tau=⏩400⏪        #steps of the simulation (tau in westpa) (int)
+tau=⏩4000⏪       #steps of the simulation (tau in westpa) (int)
 n_chains=⏩100⏪   #number of chains of the system (int)
+L=⏩300.⏪         #length of the box (float)
+rc=⏩30.⏪         #minimum radius to consider a chain is inside a cluster (float)
 
 ############### WESTPA CONFIGURATION ########################
 
