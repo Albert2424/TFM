@@ -31,12 +31,12 @@ All packages may be installed using [Miniconda] with the `pip` command of the co
 In order to execute the program you can both use a local machine or a cluster. Notice that the execution time is quiet high so this second option is highly recomended. This are the default settings for both files:
 
 ```bash
-seq='WT' #protein name (WT or Shuffle)
-temp=320 #Temperature
-cutoff=4.0 #Cutoff distance
-wind=6 #number of windows desired for WESTPA
-n=100 #number of chains 
-L=300 #cubic box size
+seq='WT'      #protein name (WT or Shuffle)
+temp=320      #Temperature
+cutoff=4.0    #Cutoff distance
+wind=15       #number of windows desired for WESTPA
+n=100         #number of chains 
+L=300         #cubic box size
 steps=4000000 #number of steps of the simulation to reach equilibrium
 
 ```
@@ -87,10 +87,10 @@ Notice that it is needed that the `/config` directory exists. If not, please gen
 
 ## EXECUTION
 
-Once the `/config` directory has been created, you can use the following command to generate the `\bstates` directory setting the proper values for the variables `windows` (integer) and `seq` (string) (default are set to 6 and 'WT' respectively). After that you can run the script in the `/INITIAL_CONFIG` directory using a shell:
+Once the `/config` directory has been created, you can use the following command to generate the `\bstates` directory setting the proper values for the variables `windows` (integer, the number of initial states that config contains), `seq` (string, the name of the protein you are working with), `rc` (float, the minimum radius for a particle to be considered inside of a cluster), `L` (float, size of the cubic simulation box) and `n_chains` (int, number of chains that each configuration contains) (default values are shown below). After that you can run the script in the `/INITIAL_CONFIG` directory using a shell:
 
 ```Shell
-python bstates.py --seq 'WT' --windows 6
+python bstates.py --seq 'WT' --windows 15 --rc 30. --L 300. --n_chains 100
 ```
 
 ## RESULTS
