@@ -72,7 +72,7 @@ The program will return a directory named `/config` containing the initial confi
 
 # BSTATES REPOSITORY
 
-Following with the idea of generating different configurations in order to run the _WESTPA_ simulation, since westpa requires a `/bstates` directory with all the initial states, this can be generated using the program `bstates.py`.
+Following with the idea of generating different configurations in order to run the _WESTPA_ simulation, since _WESTPA_ requires a `/bstates` directory with all the initial states, this can be generated using the program `bstates.py`.
 
 ## REQUIREMENTS
 
