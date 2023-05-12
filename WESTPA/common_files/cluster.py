@@ -17,8 +17,10 @@ from argparse import ArgumentParser
 
 parser = ArgumentParser()
 parser.add_argument('--seq',nargs='?',const='', type=str)
+parser.add_argument('--rc',nargs='?',const='', type=float)
+parser.add_argument('--L',nargs='?',const='', type=float)
+parser.add_argument('--n_chains',nargs='?',const='', type=int)
 args = parser.parse_args()
-
 # name='WT'
 
 
@@ -152,7 +154,7 @@ def CM(fasta,prot):
         
     return r_CM
 
-def wolf_algorithm(X, radius, min_samples=2):
+def clust_detection(X, radius, L,min_samples=2):
     
     """
     Uses the wolf algorithm to sample the different clusters of the system.
@@ -167,6 +169,7 @@ def wolf_algorithm(X, radius, min_samples=2):
         
         min_samples: integer. Minimum number of particles that hte algorithm considers
                      as a cluster (default is 2).
+        L: float. Size of the simulation box.
    
     OUTPUT:
     --------
@@ -175,13 +178,18 @@ def wolf_algorithm(X, radius, min_samples=2):
                         with -1 label are not part of any cluster.
     
     """
-    
-    dbscan = DBSCAN(eps=radius, min_samples=min_samples)
-    dbscan.fit(X)
+    X=np.array(X) #avoids [array(),array(),...]
+    def my_pdist(x,y,L):
+        dr = np.abs(x-y)
+        dr = np.abs(dr - np.rint(dr/L)*L)
+        return np.linalg.norm(dr)
+
+
+    dbscan = DBSCAN(eps=radius, metric=my_pdist, metric_params={'L':L}, min_samples=min_samples).fit(X)
     return dbscan.labels_
 
 
-def clust(pos,dist,min_size):
+def clust(pos,dist,L,min_size):
     
     """
     Detects clusters formed in every frame of the simulation.
@@ -232,7 +240,7 @@ def clust(pos,dist,min_size):
         clusters[frame] = {}
         
         #calculate the different clusters
-        labels = wolf_algorithm(pos[frame], dist, min_size)
+        labels = clust_detection(pos[frame], dist,L, min_size)
         
         #add the clusters into the dictionary
         for label in range(len(labels)):
@@ -313,35 +321,36 @@ def generate_pcoord(frame,cl):
     for i in cl[frame]:
         print(f'cluster {i:} size: {cl[frame][i]["size"]:} and radius: {cl[frame][i]["rad"]:.6f}')
         
-        rad.append(cl[frame][i]["rad"])
+        rad.append(cl[frame][i]["size"])
     
     print('')
     try:
         dist = np.max(rad)
     except ValueError:
-        dist = 0.
+        dist = 0
         
     return dist
 
 
 if __name__ == "__main__":
     proteins = initProteins()
-    # fasta_WT = proteins.loc[args.seq].fasta
-    fasta_WT = proteins.loc['WT'].fasta
+    fasta_WT = proteins.loc[args.seq].fasta
     
     filename = "top.pdb"
     traject = 'traj.dcd'
     
     ipos=get_traj(traject,filename)
     
-    prot=protein(ipos,100)
+    prot=protein(ipos,args.n_chains)
     
     pos=CM(fasta_WT,prot)
     
-    cl,centers=clust(pos,7.5,2)
+    cl,centers=clust(pos,args.rc,args.L,2)
     
     dist1 = generate_pcoord('frame 0',cl)
     dist2 = generate_pcoord('frame 1',cl)
     dist3 = generate_pcoord('frame 2',cl)
     d_arr = [dist1,dist2,dist3]       
     np.savetxt("dist.dat", d_arr)
+
+
