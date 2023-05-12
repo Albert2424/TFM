@@ -10,16 +10,21 @@ Created on Mon Mar 13 12:01:53 2023
 
 import numpy as np
 import mdtraj as md
+# import MDAnalysis
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN,KMeans
 from analyse_ini import *
 from argparse import ArgumentParser
 import os
 import shutil
+from scipy.spatial import distance
 
 parser = ArgumentParser()
 parser.add_argument('--seq',nargs='?',const='', type=str)
 parser.add_argument('--windows',nargs='?',const='', type=int)
+parser.add_argument('--rc',nargs='?',const='', type=float)
+parser.add_argument('--L',nargs='?',const='', type=float)
+parser.add_argument('--n_chains',nargs='?',const='', type=int)
 args = parser.parse_args()
 
 
@@ -45,9 +50,10 @@ def get_traj(filename,top):
               xyz coordinates of each particle.                  
     
     """
-    
+     
     file=md.load_dcd(filename,top)
     traj=file.xyz
+
     return traj
 
 def get_initial_pos(filename):
@@ -70,8 +76,10 @@ def get_initial_pos(filename):
     
     """
     
-    file=md.load_pdb(filename)
-    ipos=file.xyz
+    
+    file=md.load_pdb(filename)    
+    ipos = file.xyz
+    
     return ipos
 
 def protein(traj,n_chains):
@@ -153,7 +161,7 @@ def CM(fasta,prot):
         
     return r_CM
 
-def wolf_algorithm(X, radius, min_samples=2):
+def clust_detection(X, radius, L,min_samples=2):
     
     """
     Uses the wolf algorithm to sample the different clusters of the system.
@@ -168,6 +176,7 @@ def wolf_algorithm(X, radius, min_samples=2):
         
         min_samples: integer. Minimum number of particles that hte algorithm considers
                      as a cluster (default is 2).
+        L: float. Size of the simulation box.
    
     OUTPUT:
     --------
@@ -176,13 +185,18 @@ def wolf_algorithm(X, radius, min_samples=2):
                         with -1 label are not part of any cluster.
     
     """
-    
-    dbscan = DBSCAN(eps=radius, min_samples=min_samples)
-    dbscan.fit(X)
+    X=np.array(X) #avoids [array(),array(),...]
+    def my_pdist(x,y,L):
+        dx = np.abs(x-y)
+        dx = np.abs(dx - np.rint(dx/L)*L)
+        return np.linalg.norm(dx)
+
+
+    dbscan = DBSCAN(eps=radius, metric=my_pdist, metric_params={'L':L}, min_samples=min_samples).fit(X)
     return dbscan.labels_
 
 
-def clust(pos,dist,min_size):
+def clust(pos,dist,L,min_size):
     
     """
     Detects clusters formed in every frame of the simulation.
@@ -197,6 +211,7 @@ def clust(pos,dist,min_size):
         
         min_size: integer. Minimum number of particles that hte algorithm considers
                      as a cluster (default is 2).
+        L: float. Size of the simulation box.
    
     OUTPUT:
     --------
@@ -223,7 +238,7 @@ def clust(pos,dist,min_size):
         clusters[frame] = {}
         
         #calculate the different clusters
-        labels = wolf_algorithm(pos[frame], dist, min_size)
+        labels = clust_detection(pos[frame], dist,L, min_size)
         
         #add the clusters into the dictionary
         for label in range(len(labels)):
@@ -248,17 +263,17 @@ def clust(pos,dist,min_size):
                                 np.mean(np.array(clusters[frame][clust]['pos'])[:,1]),
                                 np.mean(np.array(clusters[frame][clust]['pos'])[:,2])])
                   
-                distances = np.linalg.norm(np.array(clusters[frame][clust]['pos']) - centers[clust], axis=1)
+                # distances = np.linalg.norm(np.array(clusters[frame][clust]['pos']) - centers[clust], axis=1)
                 
                 #rotation radius
                 # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
                 
                 #hidrodynamic radius
-                clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
+                clusters[frame][clust]['rad'] = 1/(np.average(1/distance.pdist(np.array(clusters[frame][clust]['pos']))))
                     
         return clusters,np.array(centers)
 
-def directories(windows,name):
+def directories(windows,name,rc,L,n_chains):
     
     """
     Creates the bstates directory necessary for the performance
@@ -272,6 +287,13 @@ def directories(windows,name):
                  directory contains.              
         
         name: str. Name of the protein used in the generation of the initial config.
+        
+        L: float. Size of the simulation box.
+        
+        n_chains: int. Number of chains of the simulation.
+        
+        rc: float. Minimum distance to consider a particle in the cluster.
+        
        
     OUTPUT:
     --------
@@ -315,32 +337,32 @@ def directories(windows,name):
 
         ipos=get_initial_pos(file)
 
-        prot=protein(ipos,100)
+        prot=protein(ipos,args.n_chains)
 
         pos=CM(fasta_WT,prot)
 
-        cl,centers=clust(pos,7.5,2)
+        cl,centers=clust(pos,rc,L,2)
 
         print('Number of clusters: ',len(cl['frame 0']))
         rad = []
         for i in cl['frame 0']:
             print(f'cluster {i:} size: {cl["frame 0"][i]["size"]:} and radius: {cl["frame 0"][i]["rad"]:.6f}')
             
-            rad.append(cl["frame 0"][i]["rad"])   
+            rad.append(cl["frame 0"][i]["size"])   
         with open('bstates/'+directory+'/pcoord.init','w') as f:
             try:
                 f.write(str(np.max(rad)))
                 bins.append(np.max(rad))
             except ValueError:
-                f.write(str(0.))
-                bins.append(0.)
+                f.write(str(0))
+                bins.append(0)
             pass
                 
         with open('bstates/pcoord.init','a') as f:
             try:
                 f.write(str(np.max(rad))+'\n')
             except ValueError:
-                f.write(str(0.)+'\n')
+                f.write(str(0)+'\n')
             pass
 
         with open('bstates/bstates.txt','a') as f:
@@ -369,9 +391,15 @@ def directories(windows,name):
             string += i
         else:
             string += str(i)+','
-    print('suggested bin distribution: ['+string+']')
+    print('suggested bin distribution: ['+string+']') 
         
         
 if __name__ == '__main__':
-	directories(args.windows,args.seq)
+    directories(args.windows,args.seq,args.rc,args.L,args.n_chains)
+    # for i in range(10):
+    #     rc = rc_ini*(rc_fin-rc_ini)/10*i
+    #     directories(args.windows,args.seq,args.rc,args.L)
+
+
+
 
