@@ -110,8 +110,8 @@ if __name__ == '__main__':
     proteins = initProteins()
     fasta_WT = proteins.loc[args.seq].fasta
     
-    # clust_list = rc_graph(config, proteins, fasta_WT, args.n_chains, args.L)
-    clust_list = read('clust_rc.dat')
+    clust_list = rc_graph(config, proteins, fasta_WT, args.n_chains, args.L)
+    # clust_list = read('clust_rc.dat')
     plot(clust_list,expected,max_it)
     
     
