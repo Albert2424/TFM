@@ -11,8 +11,6 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 	2.1 [ `/bstats` ](#2.1-bs)
 	
 	2.2 [ `/common_files` ](#2.2-cf)
-		
-		3. [lala]
 	
 	2.3 [ `/westpa_scripts` ](#2.3-ws)
 	
