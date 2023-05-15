@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN,KMeans
 import matplotlib.cm as cm
 
+
 parser = ArgumentParser()
 parser.add_argument('--seq',nargs='?',const='', type=str)
 parser.add_argument('--windows',nargs='?',const='', type=int)
@@ -71,10 +72,11 @@ def plot(clust_list,expected,max_it):
     plt.figure() 
     col = iter(cm.viridis(np.linspace(0, 1, max_it)))
     for i in clust_list:
-        plt.plot(expected,clust_list[i],label=f'rc = {i:.2f}',color=next(col),marker='o')
+        plt.plot(expected,np.abs(np.array(clust_list[i])-np.array(expected)),
+                 label=f'rc = {i:.2f}',color=next(col),marker='o')
     
-    plt.xlabel('Expected Cluster Size')
-    plt.ylabel('Cluster size')
+    plt.xlabel('ECS')
+    plt.ylabel('|ECS-CS|')
     plt.legend()
 
     plt.savefig('rc_graph.pdf')
@@ -108,8 +110,8 @@ if __name__ == '__main__':
     proteins = initProteins()
     fasta_WT = proteins.loc[args.seq].fasta
     
-    clust_list = rc_graph(config, proteins, fasta_WT, args.n_chains, args.L)
-    # clust_list = read('clust_rc.dat')
+    # clust_list = rc_graph(config, proteins, fasta_WT, args.n_chains, args.L)
+    clust_list = read('clust_rc.dat')
     plot(clust_list,expected,max_it)
     
     
