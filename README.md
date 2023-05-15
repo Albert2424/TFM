@@ -1,9 +1,9 @@
 # TFM
 Contains all the codes used to perform the necessary simulations for the Master Final Work.
 
-## GENERAL GUIDELINES
+## General Guidelines
 
-### ADD A PROTEIN
+### Add a Protein
 
 For all codes used in this work, if a protein different than _WT_ and _shuffle_ must be added, this are the steps to follow:
 
@@ -12,7 +12,7 @@ For all codes used in this work, if a protein different than _WT_ and _shuffle_ 
 3. If you want to use different parameters for the residues, add the corresponding `residues.csv` to the directory or modify the existing file by adding your data.
 
 
-### CONTENTS
+### Contents
 
 1. `/INITIAL_CONFIG`: Directory containning all the necessary files to generate the initial configurations of the system to use in the WESTPA enviorement.
 2. `/WESTPA`: Directory containning all the necessary files and directories to perform a _WESTPA_ simulation of peptide agregation.  
