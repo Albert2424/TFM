@@ -5,12 +5,14 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 [WESTPA]: https://github.com/westpa/westpa
 
 ## TABLE OF CONTENTS
-1. [ REQUIREMENTS ](#1-req)
-2. [ CONTAINS ](#2-contains)
+1. [ Requirements ](#1-req)
+2. [ Contains ](#2-contains)
 
 	2.1 [ `/bstats` ](#2.1-bs)
 	
 	2.2 [ `/common_files` ](#2.2-cf)
+		
+		3. [lala]
 	
 	2.3 [ `/westpa_scripts` ](#2.3-ws)
 	
@@ -22,13 +24,15 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 	
 	2.7 [ `input.dat` and `set_input.sh` ](#2.7-is)
 	
-3. [ EXECUTION ](#3-e)
+3. [ Execution ](#3-e)
 
-	3.1 [ Cluster ](#3.1-c)
+	3.1 [ Choosing Parameters ](#3.1-cp)
+
+	3.2 [ Cluster ](#3.1-c)
 	
-	3.2 [ Local Machine ](#3.2-lm)
+	3.3 [ Local Machine ](#3.2-lm)
 
-4. [ RESULTS ](#4-r)
+4. [ Results ](#4-r)
 	
 	4.1 [ Plots using wedap ](#4.1-wedap)
 	
@@ -36,7 +40,7 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 
 
 <a name="1-req"></a>
-## REQUIREMENTS
+## Requirements
 
 Since _WESTPA_ will be used, follow the specific [requirements] of the library. In addition, for the simulation codes and the posterior analysis other important packages needed are:
 
@@ -59,7 +63,7 @@ Make sure that all this packages are included in your _WESTPA_ enviorenment.
 [requirements]: https://github.com/westpa/westpa#requirements
 
 <a name="2-contains"></a>
-## CONTAINS
+## Contains
 <a name="2.1-bs"></a>
 - **`/bstates`:** Repository containing the `bstates.txt` and `pcoord.init` files and the repositories containing every initial configuration (in `.pdb` format) and a `pcoord.init` file with the reaction coordinate of said configuration. Here's a brief explanation on how to create manually the `/bstates` directory: 
  1. Add all the basis states you may need (initial configurations) in different directories. All the basis states must have the same name, in this case `top.pdb` (if you want to use a different name, you must change other files for your simulation to work).
@@ -129,7 +133,19 @@ You should also consider changing the dimension and number of data points of the
 <a name="2.7-is"></a>
 - **`input.dat`** and **`set_input.sh`:** Files containig the most relevant input changes that may be modified for each simulation. 
 <a name="3-e"></a>
-## EXECUTION
+## Execution
+<a name="3.1-cp"></a>
+### Choosing parameters
+
+Before starting the simulation you may need to adjust some parameters such as the radius at wich a particle is included in a cluster or not. This can be done using the `rc_graph.py` program in the `/extra` directory with a bunch of configurations. The default program is made to test the radius with the initial configurations generated with the [ `bstates.py` ] program which are stored in the `/config` directory. Execute the program in the `/extra` directory to obtain a graph using:
+
+```Shell
+python rc_graph.py --seq 'WT' --windows 15 --L 300. --n_chains 100
+```
+Where `seq` is the name of your protein, `windows` is the number of configurations you have, `L` is the length of the simulation box and `n_chains` is the number of chains of the simulation. 
+
+[ `bstates.py` ]: https://github.com/Albert2424/TFM/blob/main/INITIAL_CONFIG/bstates.py
+
 <a name="3.1-c"></a>
 ### Cluster
 
@@ -209,7 +225,7 @@ If you need to update the input, use (before the previous steps):
 
 Notice that you still need the `runwe.slurm` file or you can erase the last line of the `set_input.sh` file.
 <a name="4-r"></a>
-## RESULTS
+## Results
 
 Once the simulation finishes, a file named `west.h5` (or the name you have set in the `input.dat` file) is generated. This file has all the information of the simulation and can be analysed using the _westpa_ package itself. However, another option is to use the [ `wedap` package ] which basically makes it easier to make the plots.
 
