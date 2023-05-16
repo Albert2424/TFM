@@ -266,11 +266,11 @@ And then use the generated `pdist.h5` file with plothist just like:
 
 
 ```Shell
-plothist pdist.h5 evolution -o hist_evo.pdf
+plothist evolution pdist.h5 -o hist_evo.pdf
 ```
 
 ```Shell
-plothist pdist.h5 average -o hist_av.pdf
+plothist average pdist.h5 -o hist_av.pdf
 ```
 
 Use the `--help` option in both cases to obtain more information or look at the [ westpa manual ].
