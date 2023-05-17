@@ -69,33 +69,42 @@ def rc_graph(config,proteins,fasta,n_chains,L):
             
 def plot(clust_list,expected,max_it):
     print('plotting RC graph...')
-    plt.figure() 
+    plt.figure(figsize=(10,10)) 
     col = iter(cm.viridis(np.linspace(0, 1, max_it)))
     for i in clust_list:
-        plt.plot(expected,np.abs(np.array(clust_list[i])-np.array(expected)),
-                 label=f'rc = {i:.2f}',color=next(col),marker='o')
+        # plt.plot(expected,np.array(clust_list[i])-np.array(expected),
+        #          label=f'rc = {i:.2f}',color=next(col),marker='o',
+        #          markersize=5, markeredgewidth=2.)
+        plt.plot(expected,np.array(clust_list[i])-np.array(expected),
+                 label='rc = '+i,color=next(col),marker='o',
+                 markersize=5, markeredgewidth=0.5, markeredgecolor='black')
     
-    plt.xlabel('ECS')
-    plt.ylabel('|ECS-CS|')
-    plt.legend()
+    plt.xlabel('ECS',fontsize=20)
+    plt.ylabel('ECS-CS',fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.xticks(fontsize=20)
+    plt.legend(fontsize=20)
+    plt.tight_layout()
 
     plt.savefig('rc_graph.pdf')
     plt.show()
     
     
-def read(filename):
-    rc = {0:[]}
+def read(filename,rc_ini,rc_fin,max_it):
+    rc_ = {f'{rc_ini:.2f}':[]}
     with open(filename,'r') as file:
         count = 0
+        rc = rc_ini+(rc_fin-rc_ini)/(max_it-1)*count
         for line in file:
             s = line.split()
             if len(s)>0:
-                rc[count].append(int(s[0])) 
+                rc_[f'{rc:.2f}'].append(int(s[0])) 
             else:
                 count += 1
-                rc[count]=[]
-    rc.popitem()
-    return rc
+                rc = rc_ini+(rc_fin-rc_ini)/(max_it-1)*count
+                rc_[f'{rc:.2f}']=[]
+    rc_.popitem()
+    return rc_
                 
                 
             
@@ -111,7 +120,5 @@ if __name__ == '__main__':
     fasta_WT = proteins.loc[args.seq].fasta
     
     clust_list = rc_graph(config, proteins, fasta_WT, args.n_chains, args.L)
-    # clust_list = read('clust_rc.dat')
+    # clust_list = read('clust_rc.dat',rc_ini,rc_fin,max_it)
     plot(clust_list,expected,max_it)
-    
-    
