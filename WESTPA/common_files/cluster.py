@@ -336,20 +336,28 @@ if __name__ == "__main__":
     proteins = initProteins()
     fasta_WT = proteins.loc[args.seq].fasta
     
-    filename = "top.pdb"
-    traject = 'traj.dcd'
-    
-    ipos=get_traj(traject,filename)
-    
+    #cluster from the parent
+    filename = "parent.pdb"
+    ipos=get_initial_pos(filename)
     prot=protein(ipos,args.n_chains)
-    
     pos=CM(fasta_WT,prot)
-    
     cl,centers=clust(pos,args.rc,args.L,2)
     
     dist1 = generate_pcoord('frame 0',cl)
-    dist2 = generate_pcoord('frame 1',cl)
-    dist3 = generate_pcoord('frame 2',cl)
+    
+    #clusters from the trajectory
+    filename = "seg.pdb"
+    traject = 'seg.dcd'
+    ipos=get_traj(traject,filename)
+    prot=protein(ipos,args.n_chains)
+    pos=CM(fasta_WT,prot)
+    cl,centers=clust(pos,args.rc,args.L,2)
+    
+    
+    dist2 = generate_pcoord('frame 0',cl)
+    dist3 = generate_pcoord('frame 1',cl)
+    
+    
     d_arr = [dist1,dist2,dist3]       
     np.savetxt("dist.dat", d_arr)
 

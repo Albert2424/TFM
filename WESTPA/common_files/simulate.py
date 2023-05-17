@@ -21,10 +21,11 @@ parser.add_argument('--temp',nargs='?',const='', type=int)
 parser.add_argument('--cutoff',nargs='?',const='', type=float)
 parser.add_argument('--steps',nargs='?',const='', type=int)
 parser.add_argument('--n_chains',nargs='?',const='', type=int)
+parser.add_argument('--L',nargs='?',const='', type=float)
 args = parser.parse_args()
 
 
-def simulate(residues,name,prot,temp,cutoff,steps,n_chains):
+def simulate(residues,name,prot,temp,cutoff,steps,n_chains,L):
     residues = residues.set_index('one')
 
     lj_eps, fasta, types, MWs = genParamsLJ(residues,name,prot)
@@ -33,9 +34,6 @@ def simulate(residues,name,prot,temp,cutoff,steps,n_chains):
     N = len(fasta)
 
     system = openmm.System()
-    
-    # set parameters
-    L=300.
     
     # set box vectors
     a = unit.Quantity(np.zeros([3]), unit.nanometers)
@@ -124,7 +122,7 @@ def simulate(residues,name,prot,temp,cutoff,steps,n_chains):
 
     simulation.context.setPositions(pdb.positions)
     simulation.minimizeEnergy()
-    simulation.reporters.append(app.dcdreporter.DCDReporter('{:s}.dcd'.format(name),int(steps/3)))
+    simulation.reporters.append(app.dcdreporter.DCDReporter('seg.dcd',int(steps/2)))
     
     print("~~~ STARTING SIMULATION ~~~")
     simulation.reporters.append(app.statedatareporter.StateDataReporter('{:s}_{:d}.log'.format(name,temp),int(steps/10),
@@ -135,13 +133,21 @@ def simulate(residues,name,prot,temp,cutoff,steps,n_chains):
 
     # simulation.saveCheckpoint(check_point)
     
-    print("~~~ STARTING ANALYSIS ~~~")
+    # print("~~~ STARTING ANALYSIS ~~~")
 
-    genDCD(residues,name,prot,temp,n_chains)
+    # genDCD(residues,name,prot,temp,n_chains)
 
 residues = pd.read_csv('residues.csv').set_index('three',drop=False)
 proteins = pd.read_pickle('proteins.pkl')
 print('Protein name: ',args.name,'\n Temperature: ',args.temp)
 t0 = time.time()
-simulate(residues,args.name,proteins.loc[args.name],args.temp,args.cutoff,args.steps,args.n_chains)
+simulate(residues,args.name,proteins.loc[args.name],args.temp,args.cutoff,args.steps,args.n_chains,args.L)
+
+#save the last frame of the trajectory to be used as parent for the next one.
+t = md.load('seg.dcd',top='parent.pdb') 
+t[-1].save_pdb('seg.pdb')
+
+
 print('Timing {:.3f}'.format(time.time()-t0))
+
+
