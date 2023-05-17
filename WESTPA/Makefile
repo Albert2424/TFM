@@ -10,8 +10,8 @@ clust:
 cancel:
 	scancel -n $(shell basename "`pwd`")
 analyse:
-	wedap -h5 west.h5 -dt evolution -o hist_evo.pdf
-	wedap -h5 west.h5 -dt average -pm line -o hist_av.pdf
+	wedap -h5 west.h5 -dt evolution --xlabel CS --bins 40 -o hist_evo.pdf
+	wedap -h5 west.h5 -dt average -pm line --xlabel CS --bins 40 -o hist_av.pdf
 	
 help:
 	@echo -e '################# HELP ##################'
