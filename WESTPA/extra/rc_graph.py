@@ -27,6 +27,22 @@ args = parser.parse_args()
 
 
 def config_list(windows):
+    """
+    Generates a list of all the configurations in the /config directory.
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        windows: integer. Number of initial configurations that the /config 
+                 directory contains.             
+        
+    OUTPUT:
+    --------
+        config: list. List of configurations that will be graphed.
+        
+        expected: list. list containing the expected values of the cluster sizes.
+
+    """
     config = []
     expected = []
     for c in range(windows):
@@ -36,7 +52,28 @@ def config_list(windows):
         expected.append(int(c/(windows-1)*100))
     return config,expected
        
-def rc_graph(config,proteins,fasta,n_chains,L):
+def rc_graph(config,fasta,n_chains,L):
+    """
+    Computes the values of cluster sizes for different rc (acceptance radius)
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        config: list. List of configurations that will be graphed. 
+        
+        fasta: array. Contains all the amino acids of the protein.
+        
+        n_chains: int. Number of chains of the systems.
+        
+        L: float. Size of the simulation box.
+        
+    OUTPUT:
+    --------
+        clust_list: dict. contains the size values obtained for every rc.
+                    the keys are the different rc values tested while the
+                    values are arrays containing the values for every configuration
+
+    """
     clust_list={}
     for i in range(max_it):
         rc = rc_ini+(rc_fin-rc_ini)/(max_it-1)*i
@@ -48,7 +85,7 @@ def rc_graph(config,proteins,fasta,n_chains,L):
             filename = c
             ipos=get_initial_pos(filename)
             prot=protein(ipos,n_chains)
-            pos=CM(fasta_WT,prot)
+            pos=CM(fasta,prot)
             cl,centers=clust(pos,rc,L,2)
             aux = []
             for i in cl["frame 0"]:
@@ -59,7 +96,9 @@ def rc_graph(config,proteins,fasta,n_chains,L):
             except ValueError:
                 clust_list[rc].append(0)
                 
-        with open('clust_rc.dat','a') as file:
+        with open('clust_rc.dat','a') as file:#generate a file saving the data
+                                             #obtained. Useful to modify the plot
+                                             #once you have the data.
             for i in clust_list[rc]:
                 file.write(str(i)+'\n')
             file.write('\n')
@@ -68,16 +107,36 @@ def rc_graph(config,proteins,fasta,n_chains,L):
         
             
 def plot(clust_list,expected,max_it):
+    """
+    Plots the rc dependance graph.
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        clust_list: dict. contains the size values obtained for every rc.
+                    the keys are the different rc values tested while the
+                    values are arrays containing the values for every configuration
+        
+        expected: list. list containing the expected values of the cluster sizes.
+        
+        max_it: int. Number of different rc tested.
+        
+    OUTPUT:
+    --------
+        Generates a plot that is saved as 'rc_graph.pdf'.
+
+    """
     print('plotting RC graph...')
     plt.figure(figsize=(10,10)) 
     col = iter(cm.viridis(np.linspace(0, 1, max_it)))
     for i in clust_list:
-        # plt.plot(expected,np.array(clust_list[i])-np.array(expected),
-        #          label=f'rc = {i:.2f}',color=next(col),marker='o',
-        #          markersize=5, markeredgewidth=2.)
         plt.plot(expected,np.array(clust_list[i])-np.array(expected),
-                 label='rc = '+i,color=next(col),marker='o',
-                 markersize=5, markeredgewidth=0.5, markeredgecolor='black')
+                  label=f'rc = {i:.2f}',color=next(col),marker='o',
+                  markersize=5, markeredgewidth=2.)
+        #Uncoment if reading from file (coment the plot above)
+        # plt.plot(expected,np.array(clust_list[i])-np.array(expected),
+        #          label='rc = '+i,color=next(col),marker='o',
+        #          markersize=5, markeredgewidth=0.5, markeredgecolor='black')
     
     plt.xlabel('ECS',fontsize=20)
     plt.ylabel('ECS-CS',fontsize=20)
@@ -91,6 +150,28 @@ def plot(clust_list,expected,max_it):
     
     
 def read(filename,rc_ini,rc_fin,max_it):
+    """
+    Reads a 1 column file containing the size values obtained for every rc. Each
+    different rc is separated by a \n.
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        filename: str. name of the file containing the data. 
+        
+        rc_ini: float. rc from which the tests start.
+        
+        rc_fin: float. rc from which the tests finish.
+        
+        max_it: int. Number of different rc tested.
+        
+    OUTPUT:
+    --------
+        rc_: dict. contains the size values obtained for every rc.
+                    the keys are the different rc values tested while the
+                    values are arrays containing the values for every configuration
+
+    """
     rc_ = {f'{rc_ini:.2f}':[]}
     with open(filename,'r') as file:
         count = 0
@@ -119,6 +200,6 @@ if __name__ == '__main__':
     proteins = initProteins()
     fasta_WT = proteins.loc[args.seq].fasta
     
-    clust_list = rc_graph(config, proteins, fasta_WT, args.n_chains, args.L)
+    clust_list = rc_graph(config, fasta_WT, args.n_chains, args.L)
     # clust_list = read('clust_rc.dat',rc_ini,rc_fin,max_it)
     plot(clust_list,expected,max_it)
