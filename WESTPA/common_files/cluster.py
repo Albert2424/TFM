@@ -157,7 +157,7 @@ def CM(fasta,prot):
 def clust_detection(X, radius, L,min_samples=2):
     
     """
-    Uses the wolf algorithm to sample the different clusters of the system.
+    Uses the DBSCAN algorithm to sample the different clusters of the system.
     -------------------------------------------------------------
     
     INPUT:
