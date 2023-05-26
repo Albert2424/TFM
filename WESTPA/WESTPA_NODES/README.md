@@ -16,7 +16,7 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 
 	2.4 [ `/extra` ](#2.4-e)
 	
-	2.5 [ `env.sh`,`ini.sh` and `run.sh` ](#2.4-eir)
+	2.5 [ `env.sh` and `ini.sh` ](#2.4-eir)
 	
 	2.6 [ `west.cfg` ](#2.5-w)
 	
@@ -115,7 +115,7 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 
 <br></br>
 <a name="2.4-eir"></a>
-- **`env.sh`**,**`ini.sh`** and **`run.sh`:** This are the needed files to ensure that the _WESTPA_enviorenment is set correctly and to initialize and run the simulation. Since in this case we do not have a target state, the lines containing _TSTATE\_ARGS_ on the _w\_init_ command have been commented. If you need a target state, then uncomment these lines and specify your target state on the `tstate.file` (in the default simulation this file is useless).  
+- **`env.sh`** and **`ini.sh`:** This are the needed files to ensure that the _WESTPA_enviorenment is set correctly and to initialize and run the simulation. Since in this case we do not have a target state, the lines containing _TSTATE\_ARGS_ on the _w\_init_ command have been commented. If you need a target state, then uncomment these lines and specify your target state on the `tstate.file` (in the default simulation this file is useless).  
 
 <br></br>
 <a name="2.5-w"></a>
