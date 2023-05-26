@@ -1,4 +1,4 @@
-# WESTPA SIMULATION OF PROTEIN AGREGATION
+# WESTPA SIMULATION OF PROTEIN AGREGATION (USING NODES)
 
 This repository contains all the necessary files to perform the _[WESTPA] simulation of protein agregation_ (WSPA).
 
@@ -58,9 +58,10 @@ All packages may be installed using [Miniconda] with the `pip` command of the co
 
 [Miniconda]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 
-Make sure that all this packages are included in your _WESTPA_ enviorenment.
+Make sure that all this packages are included in your _WESTPA_ enviorenment. Strictly speaking it is not necessary to have multiple nodes to run the simulation using this code, however if you only have one node it is better to use the code in [WESTPA\_GPU].
 
 [requirements]: https://github.com/westpa/westpa#requirements
+[WESTPA\_GPU]: https://github.com/Albert2424/TFM/edit/main/WESTPA/WESTPA_GPU
 
 <a name="2-contains"></a>
 ## Contains
