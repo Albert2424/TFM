@@ -60,6 +60,12 @@ All packages may be installed using [Miniconda] with the `pip` command of the co
 
 Make sure that all this packages are included in your _WESTPA_ enviorenment. Strictly speaking it is not necessary to have multiple nodes to run the simulation using this code, however if you only have one node it is better to use the code in [WESTPA\_GPU]. All nodes must have the same number of GPUs or, at least, the maximum number of GPUs used must be maximum as high as the number of GPUs of the node with less GPUs.
 
+To change the number of nodes used modify the `runwe.slurm` file:
+
+```Shell
+#SBATCH -N 2
+```
+
 [requirements]: https://github.com/westpa/westpa#requirements
 [WESTPA\_GPU]: https://github.com/Albert2424/TFM/edit/main/WESTPA/WESTPA_GPU
 
