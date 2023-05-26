@@ -58,7 +58,19 @@ All packages may be installed using [Miniconda] with the `pip` command of the co
 
 [Miniconda]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 
-Make sure that all this packages are included in your _WESTPA_ enviorenment.
+Make sure that all this packages are included in your _WESTPA_ enviorenment. The number of used GPUs of the same node must be indicated in the `runwe.slurm` file:
+
+```Shell
+#SBATCH --gres=gpu:2
+```
+If, for example, every Node has 64 CPUs and 2 GPUs (therefore every GPU uses 32 CPUs), this must be indicated in:
+
+```Shell
+#SBATCH --cpus-per-task=64
+```
+
+Such that _cpus-per-task = GPUs·32/N_ where N is always 1 and corresponds to the number of nodes.
+
 
 [requirements]: https://github.com/westpa/westpa#requirements
 
