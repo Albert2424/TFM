@@ -83,10 +83,10 @@ def rc_graph(config,fasta,n_chains,L):
         for c in config:
             print(c)
             filename = c
-            ipos=get_initial_pos(filename)
-            prot=protein(ipos,n_chains)
-            pos=CM(fasta,prot)
-            cl,centers=clust(pos,rc,L,2)
+            ipos = get_initial_pos(filename)
+            prot = protein(ipos,n_chains)
+            pos = get_points(fasta,prot)
+            cl = clust(pos,rc,L,2,fasta,prot)
             aux = []
             for i in cl["frame 0"]:
                 aux.append(cl["frame 0"][i]["size"])
@@ -132,7 +132,7 @@ def plot(clust_list,expected,max_it):
     for i in clust_list:
         plt.plot(expected,np.array(clust_list[i])-np.array(expected),
                   label=f'rc = {i:.2f}',color=next(col),marker='o',
-                  markersize=5, markeredgewidth=2.)
+                  markersize=5,markeredgewidth=0.5,markeredgecolor='black')
         #Uncoment if reading from file (coment the plot above)
         # plt.plot(expected,np.array(clust_list[i])-np.array(expected),
         #          label='rc = '+i,color=next(col),marker='o',
@@ -191,8 +191,8 @@ def read(filename,rc_ini,rc_fin,max_it):
             
     
 if __name__ == '__main__':
-    rc_ini = 20
-    rc_fin = 45
+    rc_ini = 4
+    rc_fin = 10
     max_it = 10
     windows = 15
     
