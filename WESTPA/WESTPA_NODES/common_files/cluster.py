@@ -154,10 +154,37 @@ def CM(fasta,prot):
         
     return r_CM
 
+def get_points(fasta,prot):
+
+    """
+    Gets 10 points of every chain for every frame.
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        fasta: integer. Number of particles per chain.               
+        
+        prot: dictionary containing all frames of the trajectory.
+   
+    OUTPUT:
+    --------
+        r_prot: dictionary containing for all frames the ten positions of 
+        each chain.                 
+    
+    """
+    
+    r_prot = {}
+    mask = [i for i in range(0,len(fasta),len(fasta)//9)] 
+    for frame in prot:
+        r_prot[frame] = []
+        for p in prot[frame]:
+            r_prot[frame].append(p[mask])
+    return r_prot
+
 def clust_detection(X, radius, L,min_samples=2):
     
     """
-    Uses the wolf algorithm to sample the different clusters of the system.
+    Uses the DBSCAN to sample the different clusters of the system.
     -------------------------------------------------------------
     
     INPUT:
@@ -179,17 +206,96 @@ def clust_detection(X, radius, L,min_samples=2):
     
     """
     X=np.array(X) #avoids [array(),array(),...]
-    def my_pdist(x,y,L):
-        dr = np.abs(x-y)
-        dr = np.abs(dr - np.rint(dr/L)*L)
-        return np.linalg.norm(dr)
+
+    dists = np.sqrt(np.sum((X[:,None, :, None,:]-X[None, :, None,:,:])**2, axis=-1))
+    dists = dists.min(axis=(-1,-2))
+    
+    # print(np.min(dists[dists!=0])) #prints the minimum dist. rc around this value?
+    
+    db = DBSCAN(eps=radius,metric='precomputed', min_samples=min_samples).fit(dists)
+    labels = db.labels_
+    
+    return labels
+
+def get_radius(clusters,fasta,prot,frame):
+    
+    """
+    Computes the radius of the cluster for a certain frame.
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        clusters: dictionary containing every cluster of the frame. Each cluster 
+                  has its own dictionary that contains the chains that are part of it, the
+                  position of the center of mass of said chains and the size and radius
+                  of the cluster:
+            
+            clusters = {'frame 0':{0:{'chains':[0,1,2...],
+                                     'pos':[np.array(3),np.array(3),..],
+                                     'size': 14},
+                                   
+                                   1:{...}
+                                   
+                                   .
+                                   .
+                                   .
+                                   }
+                        .
+                        .
+                        .
+                        }
+            
+        fasta: integer. Number of particles per chain.               
+        
+        prot: dictionary containing all frames of the trajectory.
+        
+        frame: str. Name of the current frame: 'frame 0', 'frame 1'...
+   
+    OUTPUT:
+    --------
+        Adds to clusters the radius of every frame so now clusters is like:
+            
+            clusters = {'frame 0':{0:{'chains':[0,1,2...],
+                                     'pos':[np.array(3),np.array(3),..],
+                                     'size': 14,
+                                     'radius': 1.453},
+                                   
+                                   1:{...}
+                                   
+                                   .
+                                   .
+                                   .
+                                   }
+                        .
+                        .
+                        .
+                        }  
+
+    """
+    
+    pos=CM(fasta,prot) #get the center of mass of every chain
+    
+    # Get the centers of each cluster
+
+    centers = []
+    for clust in clusters[frame]:
+        chain_per_clust = clusters[frame][clust]['chains'] #chains of the clust 
+        positions = np.array(pos[frame])[chain_per_clust] #CM of the clust
+        centers.append([np.mean(np.array(positions)[:,0]),
+                        np.mean(np.array(positions)[:,1]),
+                        np.mean(np.array(positions)[:,2])])
+          
+        distances = np.linalg.norm(positions - centers[clust], axis=1)
+        
+        #rotation radius
+        # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
+        
+        #hidrodynamic radius
+        clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
+                    
 
 
-    dbscan = DBSCAN(eps=radius, metric=my_pdist, metric_params={'L':L}, min_samples=min_samples).fit(X)
-    return dbscan.labels_
-
-
-def clust(pos,dist,L,min_size):
+def clust(pos,dist,L,min_size,fasta,prot):
     
     """
     Detects clusters formed in every frame of the simulation.
@@ -204,6 +310,10 @@ def clust(pos,dist,L,min_size):
         
         min_size: integer. Minimum number of particles that hte algorithm considers
                      as a cluster (default is 2).
+                     
+        fasta: integer. Number of particles per chain.               
+        
+        prot: dictionary containing all frames of the trajectory.
    
     OUTPUT:
     --------
@@ -226,10 +336,7 @@ def clust(pos,dist,L,min_size):
                         .
                         .
                         .
-                        }
-            
-        centers: array containing the xyz coordinates of every cluster center.
-                        
+                        }                       
     
     """
     
@@ -241,10 +348,8 @@ def clust(pos,dist,L,min_size):
         
         #calculate the different clusters
         labels = clust_detection(pos[frame], dist,L, min_size)
-        
         #add the clusters into the dictionary
-        for label in range(len(labels)):
-            
+        for label in range(len(labels)):            
             if labels[label] != -1 :
                 if labels[label] in clusters[frame]:
                     clusters[frame][labels[label]]['chains'].append(label)
@@ -256,25 +361,9 @@ def clust(pos,dist,L,min_size):
                     
         
         #RADIUS OF THE CLUSTER
+        get_radius(clusters,fasta,prot,frame) #adds radius to the dict
         
-        # Get the centers of each cluster
-        
-        for frame in clusters:
-            centers = []
-            for clust in clusters[frame]:
-                centers.append([np.mean(np.array(clusters[frame][clust]['pos'])[:,0]),
-                                np.mean(np.array(clusters[frame][clust]['pos'])[:,1]),
-                                np.mean(np.array(clusters[frame][clust]['pos'])[:,2])])
-                  
-                distances = np.linalg.norm(np.array(clusters[frame][clust]['pos']) - centers[clust], axis=1)
-                
-                #rotation radius
-                # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
-                
-                #hidrodynamic radius
-                clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
-                    
-    return clusters,np.array(centers)
+    return clusters
 
 
 def generate_pcoord(frame,cl):
@@ -316,7 +405,7 @@ def generate_pcoord(frame,cl):
     
     """
     
-    print(f'Number of clusters in frame {frame:}: ',len(cl[frame]))
+    print(f'Number of clusters in {frame:}: ',len(cl[frame]))
     rad = []
     for i in cl[frame]:
         print(f'cluster {i:} size: {cl[frame][i]["size"]:} and radius: {cl[frame][i]["rad"]:.6f}')
@@ -336,22 +425,22 @@ if __name__ == "__main__":
     proteins = initProteins()
     fasta_WT = proteins.loc[args.seq].fasta
     
-    #cluster from the parent
+    #clusters from the parent
     filename = "parent.pdb"
-    ipos=get_initial_pos(filename)
-    prot=protein(ipos,args.n_chains)
-    pos=CM(fasta_WT,prot)
-    cl,centers=clust(pos,args.rc,args.L,2)
+    ipos = get_initial_pos(filename)
+    prot = protein(ipos,args.n_chains)
+    pos = get_points(fasta_WT,prot)
+    cl = clust(pos,args.rc,args.L,2,fasta_WT,prot)
     
     dist1 = generate_pcoord('frame 0',cl)
     
     #clusters from the trajectory
     filename = "seg.pdb"
     traject = 'seg.dcd'
-    ipos=get_traj(traject,filename)
-    prot=protein(ipos,args.n_chains)
-    pos=CM(fasta_WT,prot)
-    cl,centers=clust(pos,args.rc,args.L,2)
+    ipos = get_traj(traject,filename)
+    prot = protein(ipos,args.n_chains)
+    pos = get_points(fasta_WT,prot)
+    cl = clust(pos,args.rc,args.L,2,fasta_WT,prot)
     
     
     dist2 = generate_pcoord('frame 0',cl)
@@ -359,6 +448,4 @@ if __name__ == "__main__":
     
     
     d_arr = [dist1,dist2,dist3]       
-    np.savetxt("dist.dat", d_arr)
-
-
+    np.savetxt("dist.dat", d_arr) #save to dist.dat for westpa to get the pcoord
