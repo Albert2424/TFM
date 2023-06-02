@@ -94,8 +94,8 @@ def initial_config(L,margin,n_chains,perc,N):
     xyz_non_clust = np.empty((n,3))
     xy_coord = []
         
-    for i in range(L+1):
-        for j in range(L+1):
+    for i in range(int(L)):
+        for j in range(int(L)):
                 
             x = -L/2 + i 
             y = -L/2 + j
@@ -206,7 +206,6 @@ def west_conf(windows,L,margin,n_chains,N):
         # print('clust:',clust,'\n\n','non clust',non_clust)
         xyz=np.vstack((clust,non_clust)) #stack both configurations
         topo(xyz,perc,n_chains,L,N)
-        print('lala')
     
      
     print(f'{i+1:} configurations generated')
