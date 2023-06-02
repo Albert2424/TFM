@@ -206,6 +206,7 @@ def west_conf(windows,L,margin,n_chains,N):
         # print('clust:',clust,'\n\n','non clust',non_clust)
         xyz=np.vstack((clust,non_clust)) #stack both configurations
         topo(xyz,perc,n_chains,L,N)
+        print('lala')
     
      
     print(f'{i+1:} configurations generated')
@@ -226,6 +227,7 @@ west_conf(args.windows,args.L,margin,args.n_chains,N)
 
 # %%
 
+# seq='WT'
 # print('Generating configurations...')
 
 # proteins = initProteins()
@@ -235,6 +237,6 @@ west_conf(args.windows,args.L,margin,args.n_chains,N)
 # N = len(fasta)
 # margin = 8
 
-# west_conf(8,300,margin,100,N)
+# west_conf(8,225,margin,75,N)
 
 

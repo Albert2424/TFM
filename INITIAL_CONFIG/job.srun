@@ -6,13 +6,13 @@
 #SBATCH -N 1
 ##SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
-#SBATCH --time=0-02:00
+#SBATCH --time=0-06:00
 #SBATCH --mem=48G
 
 name='WT' #protein name (WT or Shuffle)
-temp=300 #Temperature
+temp=320 #Temperature
 cutoff=4.0 #Cutoff distance
-wind=6 #number of windows desired for WESTPA
+wind=10 #number of windows desired for WESTPA
 n=100 #number of chains 
 L=300 #cubic box size
 steps=4000000
@@ -38,7 +38,10 @@ module load openmm
 module load mdanalysis
 
 date
-python init_conf.py --windows $wind --n_chains $n --L $L --seq $name
-python simulate_ini.py --seq $name --temp $temp --cutoff $cutoff --windows $wind --n_chains $n --steps $steps
+python init_conf.py --windows $wind --n_chains $n --L $L --seq $name >in.log
+python simulate_ini.py --seq $name --temp $temp --cutoff $cutoff --windows $wind --n_chains $n --steps $steps --L $L
 rm -r $name
 date
+
+rm -r __pycache__
+
