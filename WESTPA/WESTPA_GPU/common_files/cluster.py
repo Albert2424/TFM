@@ -206,8 +206,11 @@ def clust_detection(X, radius, L,min_samples=2):
     
     """
     X=np.array(X) #avoids [array(),array(),...]
+    
+    dr = X[:,None, :, None,:]-X[None, :, None,:,:]
+    dr = np.abs(dr - np.rint(dr/L)*L)#apply PBC
 
-    dists = np.sqrt(np.sum((X[:,None, :, None,:]-X[None, :, None,:,:])**2, axis=-1))
+    dists = np.sqrt(np.sum((dr)**2, axis=-1))
     dists = dists.min(axis=(-1,-2))
     
     # print(np.min(dists[dists!=0])) #prints the minimum dist. rc around this value?
