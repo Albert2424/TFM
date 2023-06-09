@@ -427,7 +427,7 @@ def directories(windows,name,rc,L,n_chains):
     for config in range(windows):
         perc = f'{config/(windows-1):.2f}' #name of the end of the config
         file = 'top_eq_'+perc+'.pdb' #initial configurations
-        directory = f'{int(float(perc)*100):02d}' #directories
+        directory = f'{int(float(perc)*n_chains):02d}' #directories
         
         os.mkdir('bstates/'+directory)
         print('/'+directory)
