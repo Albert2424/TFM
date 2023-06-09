@@ -76,12 +76,7 @@ Following with the idea of generating different configurations in order to run t
 
 ## Requirements
 
-If you have executed on the same machine the codes to generate the `/config` directory, you will be able to run the code in order to generate the `/bstates` directory. If not, the requirements are the same as in the [previous case] plus executing the `analyse_ini.py` program in order to initialize its functions:
-
-
-```Shell
-python analyse_ini.py
-```
+If you have executed on the same machine the codes to generate the `/config` directory, you will be able to run the code in order to generate the `/bstates` directory. If not, the requirements are the same as in the [previous case] plus having the `analyse_ini.py` program in the directory in order to initialize its functions.
 
 Notice that it is needed that the `/config` directory exists. If not, please generate it before running `bstates.py`.
 
@@ -95,7 +90,7 @@ python bstates.py --seq 'WT' --windows 15 --rc 30. --L 300. --n_chains 100
 
 ## Results
 
-The generated directory contains all necessary files for _WESTPA_ to read and none of them should be removed! The `pcoord` used is the size of the cluster (hydrodynamic radius) of each configuration. 
+The generated directory contains all necessary files for _WESTPA_ to read and none of them should be removed! The `pcoord` used is the size of the cluster (hydrodynamic radius) of each configuration. Each folder on the `bstates` directory is named after the expected number of chains in the cluster.
 
 NOTE: _If you run again `bstates.py`, the previous `/bstates`directory will be permanently removed. The `bstates.txt` file is generated taking into account that each configuration has the same probability but this can be changed manually by modifying the second column of each initial configuration._
 
