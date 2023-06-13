@@ -146,12 +146,12 @@ def get_clusts(clusters,fasta,prot,frame,L):
         
     return center,biggest,chain_per_clust,rad
 
-def rel_dist(config,fasta,n_chains,L):
+def rel_dist(config,fasta,n_chains,L,seq):
     dist = {}
     rad = []
     for c in config:
         print(c)
-        filename = 'bstates/'+c+'/top.pdb'
+        filename = 'bstates_'+seq+'/'+c+'/top.pdb'
         ipos = get_initial_pos(filename)
         prot = protein(ipos,n_chains)
         pos = get_points(fasta,prot)
@@ -198,7 +198,7 @@ def plot(dist,fasta,n_chains,seq):
     print('plotting distances graph...')
     
     
-    
+    data_seq = []
     plt.figure(figsize=(10,10)) 
     out = ['00','11']
     col = iter(cm.viridis(np.linspace(0, 1, len(dist)-len(out))))
@@ -209,7 +209,7 @@ def plot(dist,fasta,n_chains,seq):
             plt.plot(range(len(fasta)),av,
                       label=f'n = {int(int(i)/100*n_chains):}',color=next(col),marker='o',
                       markersize=5,markeredgewidth=0.5,markeredgecolor='black')
-        
+            data_seq.append(av)
     # plt.xticks(range(len(fasta)), fasta)    
     plt.xlabel(seq,fontsize=20)
     plt.ylabel('r (nm)',fontsize=20)
@@ -220,6 +220,8 @@ def plot(dist,fasta,n_chains,seq):
 
     plt.savefig('dist_graph_'+seq+'.pdf')
     plt.show()
+    
+    return data_seq
     
 
 def plot_dens(dist,fasta,n_chains,rad,seq):
@@ -297,7 +299,76 @@ if __name__ == '__main__':
     n_chains = 150
     L = 343
     
-    dist,rad = rel_dist(config,fasta,n_chains,L)
-    plot(dist, fasta,n_chains,seq)
+    print(f'analysing {seq}...\n')
+    dist,rad = rel_dist(config,fasta,n_chains,L,seq)
+    data_WT = plot(dist, fasta,n_chains,seq)
     plot_dens(dist, fasta,n_chains,rad,seq)
-  
+    
+    seq = 'shuffle'
+    proteins = initProteins()
+    fasta = proteins.loc[seq].fasta
+    
+    print(f'analysing {seq}...\n')
+    dist,rad = rel_dist(config,fasta,n_chains,L,seq)
+    data_shuffle = plot(dist, fasta,n_chains,seq)
+    plot_dens(dist, fasta,n_chains,rad,seq)
+
+#%%  
+    #COMPARISON PLOT
+    import matplotlib as mpl
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    
+    N = len(fasta)
+    col1 = iter(cm.viridis(np.linspace(0, 1, 8)))
+    col2 = iter(cm.viridis(np.linspace(0, 1, 8)))
+    
+    config = config_list(10)
+    config = [int(i) for i in config[2:]]
+    config = np.array(np.array(config)/100*n_chains,dtype='int')
+    ticks = [(i)/(np.max(config)) for i in config]
+    ticks = [i-ticks[0]*(1-ticks.index(i)/len(ticks)) for i in ticks]
+    
+    fig, axs = plt.subplots(1,2,figsize=(13,10),sharey=True)
+    
+    #shuffle
+    plt.subplot(121)
+    plt.title('Shuffle',fontsize=25)
+    for i in data_shuffle:
+        plt.plot(range(N),i,
+                  color=next(col1),marker='o',
+                  markersize=5,markeredgewidth=0.5,markeredgecolor='black')
+    
+    
+    plt.xlabel('aa',fontsize=20)
+    plt.ylabel('r (nm)',fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.xticks(fontsize=20)
+    
+    #WT
+    plt.subplot(122)
+    plt.title('WT',fontsize=25)
+    for i in data_WT:
+        plt.plot(range(N),i,
+                  color=next(col2),marker='o',
+                  markersize=5,markeredgewidth=0.5,markeredgecolor='black')
+    
+    plt.xlabel('aa',fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.xticks(fontsize=20)
+    
+    #colorbar
+    divider = make_axes_locatable(axs[1])
+    ax_cb = divider.append_axes("right", size="7%", pad="5%")
+    cb1 = mpl.colorbar.ColorbarBase(ax_cb, cmap=mpl.cm.viridis, orientation='vertical')
+    cb1.ax.get_yaxis().set_ticks(ticks)
+    cb1.ax.set_yticklabels(config)
+    cb1.set_label('Chains in the cluster', rotation=270, fontsize=20, labelpad=20)
+    plt.gcf().add_axes(ax_cb)
+    
+    
+    plt.yticks(fontsize=15)
+    plt.xticks(fontsize=15)
+    plt.tight_layout()
+    
+    plt.savefig('comparison.pdf')
+    plt.show()
