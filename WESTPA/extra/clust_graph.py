@@ -26,7 +26,7 @@ parser.add_argument('--L',nargs='?',const='', type=float)
 parser.add_argument('--n_chains',nargs='?',const='', type=int)
 args = parser.parse_args()
 
-def config_list(windows):
+def config_list(windows,n_chains,seq):
     """
     Generates a list of all the configurations in the /config directory.
     -------------------------------------------------------------
@@ -39,16 +39,18 @@ def config_list(windows):
     OUTPUT:
     --------
         config: list. List of configurations that will be graphed.
-        
-        expected: list. list containing the expected values of the cluster sizes.
 
     """
     config = []
-    expected = []
-    for c in range(windows):
-        perc = f'{int(round((100*c/(windows-1)),0)):02d}' #name of the end of the config
-        file = perc #initial configurations
-        config.append(file)
+    with open('bstates_'+seq+'/bstates.txt','r') as f:
+        for line in f:
+            config.append(line.split()[-1])
+    
+    
+    # for c in range(windows):
+    #     perc = f'{int(round((c/(windows-1)*n_chains),0)):02d}' #name of the end of the config
+    #     file = perc #initial configurations
+    #     config.append(file)
     return config
 
 def get_clusts(clusters,fasta,prot,frame,L):
@@ -200,14 +202,14 @@ def plot(dist,fasta,n_chains,seq):
     
     data_seq = []
     plt.figure(figsize=(10,10)) 
-    out = ['00','11']
+    out = ['00','27']
     col = iter(cm.viridis(np.linspace(0, 1, len(dist)-len(out))))
     
     for i in dist:
         if i not in out:
             av = np.mean(dist[i],axis=0)
             plt.plot(range(len(fasta)),av,
-                      label=f'n = {int(int(i)/100*n_chains):}',color=next(col),marker='o',
+                      label=f'n = {int(i):}',color=next(col),marker='o',
                       markersize=5,markeredgewidth=0.5,markeredgecolor='black')
             data_seq.append(av)
     # plt.xticks(range(len(fasta)), fasta)    
@@ -251,7 +253,7 @@ def plot_dens(dist,fasta,n_chains,rad,seq):
     
     
     plt.figure(figsize=(10,10)) 
-    out = ['00','11']
+    out = ['00','27']
     col = cm.viridis(np.linspace(0, 1, len(dist)-len(out)))
 
     dist_tot = np.asarray([])
@@ -272,7 +274,7 @@ def plot_dens(dist,fasta,n_chains,rad,seq):
             hist /=  4/3*np.pi*(bins[1:]**3-bins[:-1]**3)
             rad_c = (bins[1:]+bins[:-1])/2
             
-            plt.plot(rad_c,hist, color=col[count-len(out)],label=f'n = {int(int(i)/100*n_chains):}')
+            plt.plot(rad_c,hist, color=col[count-len(out)],label=f'n = {int(i):}')
             plt.vlines(radius,0,16,colors=col[count-len(out)],linestyles='dashed')
         count += 1
         
@@ -292,18 +294,19 @@ def plot_dens(dist,fasta,n_chains,rad,seq):
             
 #%%     
 if __name__ == '__main__':
-    config = config_list(10)
     seq = 'WT'
     proteins = initProteins()
     fasta = proteins.loc[seq].fasta
-    n_chains = 150
-    L = 343
+    n_chains = 250
+    L = 349
+    config = config_list(10,n_chains,seq)
     
     print(f'analysing {seq}...\n')
     dist,rad = rel_dist(config,fasta,n_chains,L,seq)
+#%%
     data_WT = plot(dist, fasta,n_chains,seq)
     plot_dens(dist, fasta,n_chains,rad,seq)
-    
+#%%    
     seq = 'shuffle'
     proteins = initProteins()
     fasta = proteins.loc[seq].fasta
@@ -322,13 +325,13 @@ if __name__ == '__main__':
     col1 = iter(cm.viridis(np.linspace(0, 1, 8)))
     col2 = iter(cm.viridis(np.linspace(0, 1, 8)))
     
-    config = config_list(10)
+    config = config_list(10,n_chians,seq)
     config = [int(i) for i in config[2:]]
     config = np.array(np.array(config)/100*n_chains,dtype='int')
     ticks = [(i)/(np.max(config)) for i in config]
     ticks = [i-ticks[0]*(1-ticks.index(i)/len(ticks)) for i in ticks]
     
-    fig, axs = plt.subplots(1,2,figsize=(13,10),sharey=True)
+    fig, axs = plt.subplots(1,2,figsize=(12,6),sharey=True)
     
     #shuffle
     plt.subplot(121)
@@ -336,10 +339,10 @@ if __name__ == '__main__':
     for i in data_shuffle:
         plt.plot(range(N),i,
                   color=next(col1),marker='o',
-                  markersize=5,markeredgewidth=0.5,markeredgecolor='black')
+                  markersize=5,markeredgewidth=0.000,markeredgecolor='black')
     
     
-    plt.xlabel('aa',fontsize=20)
+    plt.xlabel('Residues',fontsize=20)
     plt.ylabel('r (nm)',fontsize=20)
     plt.yticks(fontsize=20)
     plt.xticks(fontsize=20)
@@ -350,13 +353,14 @@ if __name__ == '__main__':
     for i in data_WT:
         plt.plot(range(N),i,
                   color=next(col2),marker='o',
-                  markersize=5,markeredgewidth=0.5,markeredgecolor='black')
+                  markersize=5,markeredgewidth=0.000,markeredgecolor='black')
     
-    plt.xlabel('aa',fontsize=20)
+    plt.xlabel('Residues',fontsize=20)
     plt.yticks(fontsize=20)
     plt.xticks(fontsize=20)
     
     #colorbar
+
     divider = make_axes_locatable(axs[1])
     ax_cb = divider.append_axes("right", size="7%", pad="5%")
     cb1 = mpl.colorbar.ColorbarBase(ax_cb, cmap=mpl.cm.viridis, orientation='vertical')
