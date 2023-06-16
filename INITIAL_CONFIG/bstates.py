@@ -117,7 +117,7 @@ def protein(traj,n_chains):
         
     return prot
 
-def CM(fasta,prot,L):
+def CM(fasta,prot):
     
     """
     
@@ -157,39 +157,7 @@ def CM(fasta,prot,L):
     for frame in prot:
         r_CM[frame] = []
         for p in prot[frame]:
-            
-            #PBC TO CALCULATE THE CENTER OF MASS OF THE CLUSTER
-            X = np.array(p)[:,0]
-            Y = np.array(p)[:,1] 
-            Z = np.array(p)[:,2]
-            
-            theta_x = X/L*2*np.pi
-            theta_y = Y/L*2*np.pi
-            theta_z = Z/L*2*np.pi
-            
-            chi_x = np.cos(theta_x)
-            zita_x = np.sin(theta_x)
-            chi_y = np.cos(theta_y)
-            zita_y = np.sin(theta_y)
-            chi_z = np.cos(theta_z)
-            zita_z = np.sin(theta_z)
-            
-            av_chi_x = np.sum(np.dot(chi_x,mass))/M
-            av_zita_x = np.sum(np.dot(zita_x,mass))/M
-            av_chi_y = np.sum(np.dot(chi_y,mass))/M
-            av_zita_y = np.sum(np.dot(zita_y,mass))/M
-            av_chi_z = np.sum(np.dot(chi_z,mass))/M
-            av_zita_z = np.sum(np.dot(zita_z,mass))/M 
-            
-            av_theta_x = np.arctan2(-av_zita_x,-av_chi_x) + np.pi
-            av_theta_y = np.arctan2(-av_zita_y,-av_chi_y) + np.pi
-            av_theta_z = np.arctan2(-av_zita_z,-av_chi_z) + np.pi
-            
-            x_c = L*av_theta_x/(2*np.pi) 
-            y_c = L*av_theta_y/(2*np.pi) 
-            z_c = L*av_theta_z/(2*np.pi)
-            
-            r_CM[frame].append([x_c,y_c,z_c])
+            r_CM[frame].append(np.dot(np.array(mass), p) / M)
         
     return r_CM
 
@@ -220,7 +188,7 @@ def get_points(fasta,prot):
             r_prot[frame].append(p[mask])
     return r_prot
 
-def get_radius(clusters,fasta,prot,frame,L):
+def get_radius(clusters,fasta,prot,frame):
     
     """
     Computes the radius of the cluster for a certain frame.
@@ -276,7 +244,7 @@ def get_radius(clusters,fasta,prot,frame,L):
 
     """
     
-    pos=CM(fasta,prot,L) #get the center of mass of every chain
+    pos=CM(fasta,prot) #get the center of mass of every chain
     
     # Get the centers of each cluster
 
@@ -284,39 +252,9 @@ def get_radius(clusters,fasta,prot,frame,L):
     for clust in clusters[frame]:
         chain_per_clust = clusters[frame][clust]['chains'] #chains of the clust 
         positions = np.array(pos[frame])[chain_per_clust] #CM of the clust
-        
-        #PBC TO CALCULATE THE GEOMETRIC CENTER OF THE CLUSTER
-        X = np.array(positions)[:,0]
-        Y = np.array(positions)[:,1] 
-        Z = np.array(positions)[:,2]
-        
-        theta_x = X/L*2*np.pi
-        theta_y = Y/L*2*np.pi
-        theta_z = Z/L*2*np.pi
-        
-        chi_x = np.cos(theta_x)
-        zita_x = np.sin(theta_x)
-        chi_y = np.cos(theta_y)
-        zita_y = np.sin(theta_y)
-        chi_z = np.cos(theta_z)
-        zita_z = np.sin(theta_z)
-        
-        av_chi_x = np.mean(chi_x)
-        av_zita_x = np.mean(zita_x) 
-        av_chi_y = np.mean(chi_y)
-        av_zita_y = np.mean(zita_y) 
-        av_chi_z = np.mean(chi_z)
-        av_zita_z = np.mean(zita_z) 
-        
-        av_theta_x = np.arctan2(-av_zita_x,-av_chi_x) + np.pi
-        av_theta_y = np.arctan2(-av_zita_y,-av_chi_y) + np.pi
-        av_theta_z = np.arctan2(-av_zita_z,-av_chi_z) + np.pi
-        
-        x_c = L*av_theta_x/(2*np.pi) 
-        y_c = L*av_theta_y/(2*np.pi) 
-        z_c = L*av_theta_z/(2*np.pi)
-        
-        centers.append([x_c,y_c,z_c])
+        centers.append([np.mean(np.array(positions)[:,0]),
+                        np.mean(np.array(positions)[:,1]),
+                        np.mean(np.array(positions)[:,2])])
           
         distances = np.linalg.norm(positions - centers[clust], axis=1)
         
@@ -325,6 +263,7 @@ def get_radius(clusters,fasta,prot,frame,L):
         
         #hidrodynamic radius
         clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
+        clusters[frame][clust]['error'] = 1/(np.average(1/distances)**2)*np.std(1/distances)
 
 def clust_detection(X, radius, L,min_samples=2):
     
@@ -352,7 +291,10 @@ def clust_detection(X, radius, L,min_samples=2):
     """
     X=np.array(X) #avoids [array(),array(),...]
 
-    dists = np.sqrt(np.sum((X[:,None, :, None,:]-X[None, :, None,:,:])**2, axis=-1))
+    dr = X[:,None, :, None,:]-X[None, :, None,:,:]
+    dr = np.abs(dr - np.rint(dr/L)*L)#apply PBC
+
+    dists = np.sqrt(np.sum((dr)**2, axis=-1))
     dists = dists.min(axis=(-1,-2))
     
     # print(np.min(dists[dists!=0])) #prints the minimum dist. rc araound this value?
@@ -429,7 +371,7 @@ def clust(pos,dist,L,min_size,fasta,prot):
                     
         
         #RADIUS OF THE CLUSTER
-        get_radius(clusters,fasta,prot,frame,L) #adds radius to the dict
+        get_radius(clusters,fasta,prot,frame) #adds radius to the dict
         
     return clusters
 
@@ -506,7 +448,7 @@ def directories(windows,name,rc,L,n_chains):
         print('Number of clusters: ',len(cl['frame 0']))
         rad = []
         for i in cl['frame 0']:
-            print(f'cluster {i:} size: {cl["frame 0"][i]["size"]:} and radius: {cl["frame 0"][i]["rad"]:.6f}')
+            print(f'cluster {i:} size: {cl["frame 0"][i]["size"]:} and radius: {cl["frame 0"][i]["rad"]:.6f} +- {cl["frame 0"][i]["error"]:.6f}')
             
             rad.append(cl["frame 0"][i]["size"])   
         with open('bstates/'+directory+'/pcoord.init','w') as f:

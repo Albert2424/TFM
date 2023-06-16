@@ -357,7 +357,7 @@ def get_radius(clusters,fasta,prot,frame,L):
         
         #hidrodynamic radius
         clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
-                    
+        clusters[frame][clust]['error'] = 1/(np.average(1/distances)**2)*np.std(1/distances)            
 
 
 def clust(pos,dist,L,min_size,fasta,prot):
@@ -473,7 +473,7 @@ def generate_pcoord(frame,cl):
     print(f'Number of clusters in {frame:}: ',len(cl[frame]))
     rad = []
     for i in cl[frame]:
-        print(f'cluster {i:} size: {cl[frame][i]["size"]:} and radius: {cl[frame][i]["rad"]:.6f}')
+        print(f'cluster {i:} size: {cl[frame][i]["size"]:} and radius: {cl[frame][i]["rad"]:.6f} +- {cl[frame][i]["error"]:.6f}')
         
         rad.append(cl[frame][i]["size"])
     
