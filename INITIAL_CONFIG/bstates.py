@@ -371,7 +371,7 @@ def clust(pos,dist,L,min_size,fasta,prot):
                     
         
         #RADIUS OF THE CLUSTER
-        get_radius(clusters,fasta,prot,frame) #adds radius to the dict
+        # get_radius(clusters,fasta,prot,frame) #adds radius to the dict
         
     return clusters
 
@@ -448,7 +448,7 @@ def directories(windows,name,rc,L,n_chains):
         print('Number of clusters: ',len(cl['frame 0']))
         rad = []
         for i in cl['frame 0']:
-            print(f'cluster {i:} size: {cl["frame 0"][i]["size"]:} and radius: {cl["frame 0"][i]["rad"]:.6f} +- {cl["frame 0"][i]["error"]:.6f}')
+            print(f'cluster {i:} size: {cl["frame 0"][i]["size"]:}')
             
             rad.append(cl["frame 0"][i]["size"])   
         with open('bstates/'+directory+'/pcoord.init','w') as f:
@@ -493,7 +493,7 @@ def directories(windows,name,rc,L,n_chains):
             string += i
         else:
             string += str(i)+','
-    print('suggested bin distribution: ['+string+']') 
+    # print('suggested bin distribution: ['+string+']') 
         
         
 if __name__ == '__main__':

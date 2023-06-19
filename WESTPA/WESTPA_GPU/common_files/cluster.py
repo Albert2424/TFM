@@ -426,7 +426,7 @@ def clust(pos,dist,L,min_size,fasta,prot):
                     
         
         #RADIUS OF THE CLUSTER
-        get_radius(clusters,fasta,prot,frame,L) #adds radius to the dict
+        # get_radius(clusters,fasta,prot,frame,L) #adds radius to the dict
         
     return clusters
 
@@ -473,7 +473,7 @@ def generate_pcoord(frame,cl):
     print(f'Number of clusters in {frame:}: ',len(cl[frame]))
     rad = []
     for i in cl[frame]:
-        print(f'cluster {i:} size: {cl[frame][i]["size"]:} and radius: {cl[frame][i]["rad"]:.6f} +- {cl[frame][i]["error"]:.6f}')
+        print(f'cluster {i:} size: {cl[frame][i]["size"]:}')
         
         rad.append(cl[frame][i]["size"])
     
@@ -484,7 +484,6 @@ def generate_pcoord(frame,cl):
         dist = 0
         
     return dist
-
 
 if __name__ == "__main__":
     proteins = initProteins()

@@ -53,7 +53,74 @@ def config_list(windows,n_chains,seq):
     #     config.append(file)
     return config
 
-def get_clusts(clusters,fasta,prot,frame,L):
+def get_radius(positions,clust,frame,clusters):
+    
+    """
+    Computes the radius of the cluster for a certain frame.
+    -------------------------------------------------------------
+    
+    INPUT:
+    -------
+        clusters: dictionary containing every cluster of the frame. Each cluster 
+                  has its own dictionary that contains the chains that are part of it, the
+                  position of the center of mass of said chains and the size and radius
+                  of the cluster:
+            
+            clusters = {'frame 0':{0:{'chains':[0,1,2...],
+                                     'pos':[np.array(3),np.array(3),..],
+                                     'size': 14},
+                                   
+                                   1:{...}
+                                   
+                                   .
+                                   .
+                                   .
+                                   }
+                        .
+                        .
+                        .
+                        }
+            
+        fasta: integer. Number of particles per chain.               
+        
+        prot: dictionary containing all frames of the trajectory.
+        
+        frame: str. Name of the current frame: 'frame 0', 'frame 1'...
+   
+    OUTPUT:
+    --------
+        Adds to clusters the radius of every frame so now clusters is like:
+            
+            clusters = {'frame 0':{0:{'chains':[0,1,2...],
+                                     'pos':[np.array(3),np.array(3),..],
+                                     'size': 14,
+                                     'radius': 1.453},
+                                   
+                                   1:{...}
+                                   
+                                   .
+                                   .
+                                   .
+                                   }
+                        .
+                        .
+                        .
+                        }  
+
+    """
+    
+        
+          
+    distances = np.linalg.norm(positions[0], axis=1)
+    
+    #rotation radius
+    # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
+    
+    #hidrodynamic radius
+    clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
+    clusters[frame][clust]['error'] = 1/(np.average(1/distances)**2)*np.std(1/distances) 
+
+def get_clusts(clusters,fasta,prot,frame,L,t):
     
     """
     Computes the center of every cluster, the size of the biggest
@@ -98,55 +165,34 @@ def get_clusts(clusters,fasta,prot,frame,L):
 
     """
     
-    pos=CM(fasta,prot,L) #get the center of mass of every chain
-    
     # Get the centers of each cluster
     biggest = 0
     for clust in clusters[frame]:
         size = clusters[frame][clust]['size']
 
         if size > biggest:
-            chain_per_clust = clusters[frame][clust]['chains'] #chains of the clust 
-            positions = np.array(pos[frame])[chain_per_clust] #atoms of the clust
-            
-            #PBC TO CALCULATE THE GEOMETRIC CENTER OF THE CLUSTER
-            X = np.array(positions)[:,0] 
-            Y = np.array(positions)[:,1] 
-            Z = np.array(positions)[:,2] 
-            
-            theta_x = X/L*2*np.pi
-            theta_y = Y/L*2*np.pi
-            theta_z = Z/L*2*np.pi
-
-            chi_x = np.cos(theta_x)
-            zita_x = np.sin(theta_x)
-            chi_y = np.cos(theta_y)
-            zita_y = np.sin(theta_y)
-            chi_z = np.cos(theta_z)
-            zita_z = np.sin(theta_z)
-
-            av_chi_x = np.mean(chi_x)
-            av_zita_x = np.mean(zita_x) 
-            av_chi_y = np.mean(chi_y)
-            av_zita_y = np.mean(zita_y) 
-            av_chi_z = np.mean(chi_z)
-            av_zita_z = np.mean(zita_z) 
-
-            av_theta_x = np.arctan2(-av_zita_x,-av_chi_x) + np.pi
-            av_theta_y = np.arctan2(-av_zita_y,-av_chi_y) + np.pi
-            av_theta_z = np.arctan2(-av_zita_z,-av_chi_z) + np.pi
-
-            x_c = L*av_theta_x/(2*np.pi)
-            y_c = L*av_theta_y/(2*np.pi)
-            z_c = L*av_theta_z/(2*np.pi)
-
-            center = [x_c,y_c,z_c]
-            # print(center)
+            max_clust = clust
             biggest = size
             
-            rad = clusters[frame][clust]['rad']
+    c = max_clust        
+    chains = clusters[frame][c]['chains'] #chains of the clust 
+    # positions = np.array(pos[frame])[chain_per_clust] #atoms of the clust
+    
+    #PBC TO CALCULATE THE GEOMETRIC CENTER OF THE CLUSTER
+    cluster_resi = t.top.select("chainid "+' '.join([str(i) for i in chains]))
+    t = t.atom_slice(cluster_resi)
+    bonds=np.array([(i,i+1) for i in np.arange(t.n_atoms-1)], dtype=np.int32)
+    t.make_molecules_whole(inplace=True,sorted_bonds=bonds)
+    t.center_coordinates()
+    positions = t.xyz
+    
+    center = [0,0,0]
+    
+    get_radius(positions,c,frame,clusters)
+    
+    rad = clusters[frame][c]['rad']
         
-    return center,biggest,chain_per_clust,rad
+    return center,biggest,chains,rad,positions
 
 def rel_dist(config,fasta,n_chains,L,seq):
     dist = {}
@@ -158,20 +204,23 @@ def rel_dist(config,fasta,n_chains,L,seq):
         prot = protein(ipos,n_chains)
         pos = get_points(fasta,prot)
         cl = clust(pos,17.,L,2,fasta,prot)#get the clusters
+        t = md.load(filename)
         
-        center, size, chains, radius = get_clusts(cl,fasta,prot,'frame 0',L)#compute the center
+        center, size, chains, radius,pos = get_clusts(cl,fasta,prot,'frame 0',L,t)#compute the center
                                                                   #of the clust, its
                                                                   #size and chains that
-        rad.append(radius)                                                          #are part of it.
+        rad.append(radius)                                        #are part of it.
         dist[c] = []
         N = len(fasta)
+        count=1
         for i in chains:
             i += 1
-            dr = ipos[0][(i-1)*N:(i)*N] - center #select chain
-            dists = np.abs(dr - np.rint(dr/L)*L)#apply PBC
+            dists = pos[0][(count-1)*N:(count)*N] - center #select chain
+            # dists = np.abs(dr - np.rint(dr/L)*L)#apply PBC
             distances = np.linalg.norm(dists, axis=1)
             dist[c].append(distances) 
-            # print(len(chains),len(distances))
+            count+=1
+
     return dist,rad
 
 
@@ -202,7 +251,7 @@ def plot(dist,fasta,n_chains,seq):
     
     data_seq = []
     plt.figure(figsize=(10,10)) 
-    out = ['00','27']
+    out = ['00']
     col = iter(cm.viridis(np.linspace(0, 1, len(dist)-len(out))))
     
     for i in dist:
@@ -252,8 +301,8 @@ def plot_dens(dist,fasta,n_chains,rad,seq):
     
     
     
-    plt.figure(figsize=(10,10)) 
-    out = ['00','27']
+    plt.figure(figsize=(10,8)) 
+    out = ['00']
     col = cm.viridis(np.linspace(0, 1, len(dist)-len(out)))
 
     dist_tot = np.asarray([])
@@ -265,28 +314,25 @@ def plot_dens(dist,fasta,n_chains,rad,seq):
             
             radius = rad[count]
             hist,bins=np.histogram(dist_tot,bins=50)
-            # dr = bins[1]-bins[0]
-            # for k in range(len(hist)):
-            #     # dv = 4/3*np.pi*dr**3*(3*count**2+3*count+1) #volum of a layer
-            #     hist[k] /= dv
                 
             hist = np.array(hist,dtype='float64')
             hist /=  4/3*np.pi*(bins[1:]**3-bins[:-1]**3)
             rad_c = (bins[1:]+bins[:-1])/2
             
-            plt.plot(rad_c,hist, color=col[count-len(out)],label=f'n = {int(i):}')
-            plt.vlines(radius,0,16,colors=col[count-len(out)],linestyles='dashed')
+            plt.plot(rad_c,hist, color=col[count-len(out)],label='n = '+str(i))
+            plt.vlines(radius,0,20,colors=col[count-len(out)],linestyles='dashed')
         count += 1
         
-    # plt.xticks(range(len(fasta)), fasta)    
-    plt.xlabel(seq,fontsize=20)
-    plt.ylabel(r'$\rho$ (nm)',fontsize=20)
+    # plt.xticks(range(len(fasta)), fasta)  
+    plt.title(seq,fontsize=25)
+    plt.xlabel('r (nm)',fontsize=20)
+    plt.ylabel(r'$\rho \: (residues/nm^3)$',fontsize=20)
     plt.yticks(fontsize=20)
     plt.xticks(fontsize=20)
     plt.legend(fontsize=20)
     plt.tight_layout()
-    # plt.ylim((0,0.009))
-    # plt.xlim((0,40))
+    plt.ylim((0,20))
+    plt.xlim((0,35))
 
     plt.savefig('dens_graph_'+seq+'.pdf')
     plt.show()
@@ -300,13 +346,15 @@ if __name__ == '__main__':
     n_chains = 250
     L = 349
     config = config_list(10,n_chains,seq)
+    # config=['00','11','22','33','44','56','67','78','89','100']
     
     print(f'analysing {seq}...\n')
     dist,rad = rel_dist(config,fasta,n_chains,L,seq)
-#%%
     data_WT = plot(dist, fasta,n_chains,seq)
     plot_dens(dist, fasta,n_chains,rad,seq)
-#%%    
+#%%
+# np.save('222_clust.npy',dist['222'])
+      
     seq = 'shuffle'
     proteins = initProteins()
     fasta = proteins.loc[seq].fasta
@@ -376,3 +424,10 @@ if __name__ == '__main__':
     
     plt.savefig('comparison.pdf')
     plt.show()
+    
+#%%
+
+a = np.arange(21).reshape((1,7,3))
+print(a[0][1:3].shape)
+
+
