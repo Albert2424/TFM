@@ -117,8 +117,9 @@ def get_radius(positions,clust,frame,clusters):
     # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
     
     #hidrodynamic radius
-    clusters[frame][clust]['rad'] = 1/(np.average(1/distances))
-    clusters[frame][clust]['error'] = 1/(np.average(1/distances)**2)*np.std(1/distances) 
+    clusters[frame][clust]['rad'] = 1/(np.average(1/distances)) # 1/<r^(-1)>
+    clusters[frame][clust]['error'] = 1/(np.average(1/distances)**2)\
+        *np.sqrt(np.std(1/distances))/len(distances) # 1/<r^(-1)>^2 * sqrt(std(<r^(-1)>))/N
 
 def get_clusts(clusters,fasta,prot,frame,L,t):
     
@@ -191,12 +192,14 @@ def get_clusts(clusters,fasta,prot,frame,L,t):
     get_radius(positions,c,frame,clusters)
     
     rad = clusters[frame][c]['rad']
+    e = clusters[frame][c]['error']
         
-    return center,biggest,chains,rad,positions
+    return center,biggest,chains,rad,positions,e
 
 def rel_dist(config,fasta,n_chains,L,seq):
     dist = {}
     rad = []
+    err = []
     for c in config:
         print(c)
         filename = 'bstates_'+seq+'/'+c+'/top.pdb'
@@ -206,10 +209,11 @@ def rel_dist(config,fasta,n_chains,L,seq):
         cl = clust(pos,17.,L,2,fasta,prot)#get the clusters
         t = md.load(filename)
         
-        center, size, chains, radius,pos = get_clusts(cl,fasta,prot,'frame 0',L,t)#compute the center
+        center, size, chains, radius,pos,e = get_clusts(cl,fasta,prot,'frame 0',L,t)#compute the center
                                                                   #of the clust, its
                                                                   #size and chains that
         rad.append(radius)                                        #are part of it.
+        err.append(e)
         dist[c] = []
         N = len(fasta)
         count=1
@@ -221,7 +225,7 @@ def rel_dist(config,fasta,n_chains,L,seq):
             dist[c].append(distances) 
             count+=1
 
-    return dist,rad
+    return dist,rad,err
 
 
 def plot(dist,fasta,n_chains,seq):
@@ -275,7 +279,7 @@ def plot(dist,fasta,n_chains,seq):
     return data_seq
     
 
-def plot_dens(dist,fasta,n_chains,rad,seq):
+def plot_dens(dist,fasta,n_chains,rad,seq,err):
     """
     Plots the graph of the average distance of every residue to the 
     center of the cluster.
@@ -302,25 +306,31 @@ def plot_dens(dist,fasta,n_chains,rad,seq):
     
     
     plt.figure(figsize=(10,8)) 
-    out = ['00']
+    out = ['00','11']
     col = cm.viridis(np.linspace(0, 1, len(dist)-len(out)))
 
-    dist_tot = np.asarray([])
     count = 0
     for i in dist:
+        dist_tot = np.asarray([])
         if i not in out:
             for j in dist[i]:
                 dist_tot = np.concatenate((dist_tot, j))
             
             radius = rad[count]
-            hist,bins=np.histogram(dist_tot,bins=50)
+            e = err[count]
+            # e=1
+            # print(e)
+            # bins = [35/49*i for i in range(50)]
+            bins= np.linspace(0, 35**3, 50)**(1/3)
+            hist,bins=np.histogram(dist_tot,bins=bins)
                 
             hist = np.array(hist,dtype='float64')
             hist /=  4/3*np.pi*(bins[1:]**3-bins[:-1]**3)
             rad_c = (bins[1:]+bins[:-1])/2
-            
-            plt.plot(rad_c,hist, color=col[count-len(out)],label='n = '+str(i))
-            plt.vlines(radius,0,20,colors=col[count-len(out)],linestyles='dashed')
+
+            plt.plot(rad_c,hist, color=col[count-len(out)],label='n = '+ str(int(int(i)/100*n_chains)))
+            plt.vlines(radius,0,2.5,colors=col[count-len(out)],linestyles='dashed')
+            plt.axvspan(radius-e, radius+e, alpha=0.3, color=col[count-len(out)])
         count += 1
         
     # plt.xticks(range(len(fasta)), fasta)  
@@ -330,11 +340,18 @@ def plot_dens(dist,fasta,n_chains,rad,seq):
     plt.yticks(fontsize=20)
     plt.xticks(fontsize=20)
     plt.legend(fontsize=20)
+    plt.ylim((0,2.5))
+    plt.xlim((4.5,35))
     plt.tight_layout()
-    plt.ylim((0,20))
-    plt.xlim((0,35))
-
     plt.savefig('dens_graph_'+seq+'.pdf')
+    plt.show()
+    
+    
+    n = [int(i) for i in dist]
+    
+    plt.figure()
+    plt.scatter(n[1:],rad[1:])
+    plt.plot(n[1:],3*np.log(n[1:]))
     plt.show()
         
             
@@ -344,25 +361,23 @@ if __name__ == '__main__':
     proteins = initProteins()
     fasta = proteins.loc[seq].fasta
     n_chains = 250
-    L = 349
+    L = 339
     config = config_list(10,n_chains,seq)
     # config=['00','11','22','33','44','56','67','78','89','100']
     
     print(f'analysing {seq}...\n')
-    dist,rad = rel_dist(config,fasta,n_chains,L,seq)
+    dist,rad,err = rel_dist(config,fasta,n_chains,L,seq)
     data_WT = plot(dist, fasta,n_chains,seq)
-    plot_dens(dist, fasta,n_chains,rad,seq)
-#%%
-# np.save('222_clust.npy',dist['222'])
-      
+    plot_dens(dist, fasta,n_chains,rad,seq,err)
+
     seq = 'shuffle'
     proteins = initProteins()
     fasta = proteins.loc[seq].fasta
     
     print(f'analysing {seq}...\n')
-    dist,rad = rel_dist(config,fasta,n_chains,L,seq)
+    dist,rad,err = rel_dist(config,fasta,n_chains,L,seq)
     data_shuffle = plot(dist, fasta,n_chains,seq)
-    plot_dens(dist, fasta,n_chains,rad,seq)
+    plot_dens(dist, fasta,n_chains,rad,seq,err)
 
 #%%  
     #COMPARISON PLOT
@@ -427,7 +442,5 @@ if __name__ == '__main__':
     
 #%%
 
-a = np.arange(21).reshape((1,7,3))
-print(a[0][1:3].shape)
-
-
+a = np.linspace(5, 70, 33)
+print(list(a))
