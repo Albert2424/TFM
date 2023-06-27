@@ -5,14 +5,14 @@ clean:
 	rm -f *.h5 *.log *.err *.out *.pdf
 	rm -r traj_segs seg_logs istates
 new:
-	make clean
-	make run
+	clean
+	run
 clust:
-	@squeue -o "%.10i %.9P %.8j %.8T %.6M %.10l %.6D"
+	@squeue -o "%.10i %.9P %.8j %.8T %.6M %.10l %.6D %16S"
 cancel:
 	scancel -n $(shell basename "`pwd`")
 analyse:
-	wedap -h5 west.h5 -dt evolution --xlabel CS --bins 40 -o hist_evo.pdf
+	wedap -h5 west.h5 -dt evolution --xlabel CS --bins 36 -o hist_evo.pdf
 	wedap -h5 west.h5 -dt average -pm line --xlabel CS -o hist_av.pdf
 	
 help:
