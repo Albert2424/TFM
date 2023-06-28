@@ -13,16 +13,14 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 	2.2 [ `/common_files` ](#2.2-cf)
 	
 	2.3 [ `/westpa_scripts` ](#2.3-ws)
-
-	2.4 [ `/extra` ](#2.4-e)
 	
-	2.5 [ `env.sh` and `ini.sh` ](#2.4-eir)
+	2.4 [ `env.sh` and `ini.sh` ](#2.4-eir)
 	
-	2.6 [ `west.cfg` ](#2.5-w)
+	2.5 [ `west.cfg` ](#2.5-w)
 	
-	2.7 [ `runwe.slurm` ](#2.6-r)
+	2.6 [ `runwe.slurm` ](#2.6-r)
 	
-	2.8 [ `input.dat` and `set_input.sh` ](#2.7-is)
+	2.7 [ `input.dat` and `set_input.sh` ](#2.7-is)
 	
 3. [ Execution ](#3-e)
 
@@ -115,10 +113,6 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 2. Change _cluster.py_ for your code that gets the pcoord. As in the previous case some arguments where added.
 3. You need to deliver to _WESTPA_ all the necessary files to perform the simulation. you can do this adding (or eraseing) commands like the following: `sed "s/RAND/$WEST_RAND16/g" $WEST_SIM_ROOT/common_files/file_to_be_added > file_to_be_added`
 4. If the name of your basis states (and generated checkpoints) is not _top.pdb_ then change all _top.pdb_ for the desired name. 
-
-<br></br>
-<a name="2.4-e"></a>
-- **`/extra`:** Directory containing useful codes that are not necessary to run the _WESTPA_ simulation.
 
 <br></br>
 <a name="2.4-eir"></a>
