@@ -127,10 +127,6 @@ Both `simulate.py` and `analyse.py` are adaptations of codes made by Giulio Tese
 4. If the name of your basis states (and generated checkpoints) is not _top.pdb_ then change all _top.pdb_ for the desired name. 
 
 <br></br>
-<a name="2.4-e"></a>
-- **`/extra`:** Directory containing useful codes that are not necessary to run the _WESTPA_ simulation.
-
-<br></br>
 <a name="2.4-eir"></a>
 - **`env.sh`**,**`ini.sh`** and **`run.sh`:** This are the needed files to ensure that the _WESTPA_enviorenment is set correctly and to initialize and run the simulation. Since in this case we do not have a target state, the lines containing _TSTATE\_ARGS_ on the _w\_init_ command have been commented. If you need a target state, then uncomment these lines and specify your target state on the `tstate.file` (in the default simulation this file is useless).  
 
