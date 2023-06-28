@@ -69,10 +69,15 @@ If, for example, every Node has 64 CPUs and 2 GPUs (therefore every GPU uses 32 
 #SBATCH --cpus-per-task=64
 ```
 
-Such that _cpus-per-task = GPUs·32/N_ where N is always 1 and corresponds to the number of nodes.
+Such that _cpus-per-task = GPUs·32/N_ where N is always 1 and corresponds to the number of nodes. In the case of the Finisterrae 3 we have the [following] options. In addition, the number of workers of the `run.sh` file must correspond to the number of GPUs used:
+
+```Shell
+--n-workers=2
+```
 
 
 [requirements]: https://github.com/westpa/westpa#requirements
+[following]: https://cesga-docs.gitlab.io/ft3-user-guide/gpu_nodes.html#nvidia-a100
 
 <a name="2-contains"></a>
 ## Contains
