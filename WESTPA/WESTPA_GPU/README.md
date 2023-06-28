@@ -13,16 +13,14 @@ This repository contains all the necessary files to perform the _[WESTPA] simula
 	2.2 [ `/common_files` ](#2.2-cf)
 	
 	2.3 [ `/westpa_scripts` ](#2.3-ws)
-
-	2.4 [ `/extra` ](#2.4-e)
 	
-	2.5 [ `env.sh`,`ini.sh` and `run.sh` ](#2.4-eir)
+	2.4 [ `env.sh`,`ini.sh` and `run.sh` ](#2.4-eir)
 	
-	2.6 [ `west.cfg` ](#2.5-w)
+	2.5 [ `west.cfg` ](#2.5-w)
 	
-	2.7 [ `runwe.slurm` ](#2.6-r)
+	2.6 [ `runwe.slurm` ](#2.6-r)
 	
-	2.8 [ `input.dat` and `set_input.sh` ](#2.7-is)
+	2.7 [ `input.dat` and `set_input.sh` ](#2.7-is)
 	
 3. [ Execution ](#3-e)
 
