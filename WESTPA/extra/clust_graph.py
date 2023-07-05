@@ -306,7 +306,7 @@ def plot_dens(dist,fasta,n_chains,rad,seq,err):
     
     
     plt.figure(figsize=(10,8)) 
-    out = ['00','11']
+    out = ['00','27']
     col = cm.viridis(np.linspace(0, 1, len(dist)-len(out)))
 
     count = 0
@@ -328,7 +328,7 @@ def plot_dens(dist,fasta,n_chains,rad,seq,err):
             hist /=  4/3*np.pi*(bins[1:]**3-bins[:-1]**3)
             rad_c = (bins[1:]+bins[:-1])/2
 
-            plt.plot(rad_c,hist, color=col[count-len(out)],label='n = '+ str(int(int(i)/100*n_chains)))
+            plt.plot(rad_c,hist, color=col[count-len(out)],label='n = '+ str(i))#str(int(int(i)/100*n_chains)))
             plt.vlines(radius,0,2.5,colors=col[count-len(out)],linestyles='dashed')
             plt.axvspan(radius-e, radius+e, alpha=0.3, color=col[count-len(out)])
         count += 1
@@ -369,10 +369,13 @@ if __name__ == '__main__':
     dist,rad,err = rel_dist(config,fasta,n_chains,L,seq)
     data_WT = plot(dist, fasta,n_chains,seq)
     plot_dens(dist, fasta,n_chains,rad,seq,err)
-
+#%%
     seq = 'shuffle'
     proteins = initProteins()
     fasta = proteins.loc[seq].fasta
+    n_chains = 250
+    L = 339
+    config = config_list(10,n_chains,seq)
     
     print(f'analysing {seq}...\n')
     dist,rad,err = rel_dist(config,fasta,n_chains,L,seq)
@@ -440,7 +443,3 @@ if __name__ == '__main__':
     plt.savefig('comparison.pdf')
     plt.show()
     
-#%%
-
-a = np.linspace(5, 70, 33)
-print(list(a))
