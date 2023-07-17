@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN,KMeans
 import matplotlib.cm as cm
 import seaborn as sns
+from scipy.spatial.distance import pdist
 
 
 parser = ArgumentParser()
@@ -111,7 +112,9 @@ def get_radius(positions,clust,frame,clusters):
     
         
           
-    distances = np.linalg.norm(positions[0], axis=1)
+    # distances = np.linalg.norm(positions[0], axis=1)
+    # print(positions.shape)
+    distances = pdist(positions[0][::15])
     
     #rotation radius
     # clusters[frame][clust]['rad'] = np.max(distances)#add the radius 
@@ -255,7 +258,7 @@ def plot(dist,fasta,n_chains,seq):
     
     data_seq = []
     plt.figure(figsize=(10,10)) 
-    out = ['00']
+    out = ['00','27']
     col = iter(cm.viridis(np.linspace(0, 1, len(dist)-len(out))))
     
     for i in dist:
@@ -369,7 +372,7 @@ if __name__ == '__main__':
     dist,rad,err = rel_dist(config,fasta,n_chains,L,seq)
     data_WT = plot(dist, fasta,n_chains,seq)
     plot_dens(dist, fasta,n_chains,rad,seq,err)
-#%%
+
     seq = 'shuffle'
     proteins = initProteins()
     fasta = proteins.loc[seq].fasta
@@ -391,7 +394,7 @@ if __name__ == '__main__':
     col1 = iter(cm.viridis(np.linspace(0, 1, 8)))
     col2 = iter(cm.viridis(np.linspace(0, 1, 8)))
     
-    config = config_list(10,n_chians,seq)
+    config = config_list(10,n_chains,seq)
     config = [int(i) for i in config[2:]]
     config = np.array(np.array(config)/100*n_chains,dtype='int')
     ticks = [(i)/(np.max(config)) for i in config]
