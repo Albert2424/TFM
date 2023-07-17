@@ -18,6 +18,13 @@ REQUIRES:
     - seg_traj/<iteration> (ex: 000081)
 '''
 
+#clean if there was a previous merged dcd
+    
+try:
+    os.remove('merged_trajectory.dcd')
+except OSError:
+    pass
+
 #Sets the order in which the files must be read.
 
 sizes = [] 
